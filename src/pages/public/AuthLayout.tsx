@@ -71,9 +71,15 @@ export default function AuthLayout({
               </span>
               <strong style={{ fontFamily: 'var(--font-display)', fontSize: 16 }}>TalentSphere</strong>
             </Link>
-            <button className="theme-toggle" onClick={toggle} aria-label="Toggle theme">
-              <AppIcon name={isDark ? 'sun' : 'moon'} size={16} />
-            </button>
+            <div className="row" style={{ gap: 8 }}>
+              <Link to="/" className="auth-back">
+                <AppIcon name="back" size={14} />
+                Back to site
+              </Link>
+              <button className="theme-toggle" onClick={toggle} aria-label="Toggle theme">
+                <AppIcon name={isDark ? 'sun' : 'moon'} size={16} />
+              </button>
+            </div>
           </div>
 
           <h1 style={{ fontSize: 28 }}>{title}</h1>

@@ -2142,6 +2142,42 @@ hr,
   max-width: 52ch;
 }
 
+/*
+ * In light mode the ink block is the contrast. In dark mode it disappears into the
+ * page, so the band borrows the brand instead of the ink.
+ */
+[data-theme='dark'] .landing-cta {
+  background: linear-gradient(150deg, var(--forest-900), #10201b 62%);
+  border-color: color-mix(in srgb, var(--brand) 34%, transparent);
+  box-shadow: 0 30px 70px -50px color-mix(in srgb, var(--brand) 60%, transparent);
+}
+
+/*
+ * The band is ink, and so is the primary button — on it, the button vanishes. Inside
+ * the CTA the pair inverts: solid paper for the primary, outline for the secondary.
+ */
+.landing-cta .btn:not(.btn-secondary) {
+  background: #fff;
+  color: var(--ink-900);
+  border-color: #fff;
+}
+
+.landing-cta .btn:not(.btn-secondary):hover {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(255, 255, 255, 0.88);
+}
+
+.landing-cta .btn-secondary {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.34);
+  color: #fff;
+}
+
+.landing-cta .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
 .landing-footer {
   border-top: 1px solid var(--hairline);
   padding: 30px 34px 44px;
@@ -2323,4 +2359,543 @@ hr,
 
 .checklist li .todo-hint {
   color: var(--text-3);
+}
+
+/* ------------------------------------------------- landing: scroll reveal */
+
+/*
+ * Reveal-on-scroll. The element is hidden only once JS has decided it can animate,
+ * so with JS off or reduced motion on, content is visible from the start.
+ */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity 0.6s var(--ease-out),
+    transform 0.6s var(--ease-out);
+  will-change: opacity, transform;
+}
+
+.reveal.shown {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------- landing: nav/hero */
+
+.landing-nav {
+  transition: padding 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.landing-nav.condensed {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  box-shadow: 0 1px 0 var(--hairline), 0 10px 26px -24px rgb(0 0 0 / 0.5);
+}
+
+.landing-links {
+  display: flex;
+  gap: 22px;
+  font-size: 13.5px;
+}
+
+.landing-links a {
+  color: var(--text-2);
+  text-decoration: none;
+  position: relative;
+  padding-bottom: 2px;
+}
+
+.landing-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.24s var(--ease-out);
+}
+
+.landing-links a:hover {
+  color: var(--text);
+}
+
+.landing-links a:hover::after {
+  transform: scaleX(1);
+}
+
+/* The hero photo sits behind the product panel, which overlaps its lower corner. */
+.hero-visual {
+  position: relative;
+  display: grid;
+  animation: rise 0.6s var(--ease-out) 0.12s both;
+}
+
+.hero-photo {
+  margin: 0;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--hairline-strong);
+  aspect-ratio: 3 / 2;
+  will-change: transform;
+}
+
+.hero-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* Settle the photography into the paper palette instead of fighting it. */
+  filter: saturate(0.82) contrast(1.02);
+}
+
+[data-theme='dark'] .hero-photo img {
+  filter: saturate(0.72) brightness(0.82) contrast(1.05);
+}
+
+.hero-visual .hero-panel {
+  position: relative;
+  margin: -84px 0 0 auto;
+  width: min(100%, 380px);
+  box-shadow: 0 30px 60px -40px rgb(0 0 0 / 0.55);
+}
+
+/* ------------------------------------------------ landing: capability rows */
+
+.capabilities {
+  display: grid;
+  gap: 72px;
+}
+
+.capability {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 44px;
+  align-items: center;
+}
+
+.capability.flip .capability-media {
+  order: 2;
+}
+
+.capability-media {
+  margin: 0;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--hairline-strong);
+  aspect-ratio: 3 / 2;
+}
+
+.capability-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.82) contrast(1.02);
+  transform: scale(1.01);
+  transition: transform 0.7s var(--ease-out);
+}
+
+[data-theme='dark'] .capability-media img {
+  filter: saturate(0.72) brightness(0.82) contrast(1.05);
+}
+
+.capability:hover .capability-media img {
+  transform: scale(1.045);
+}
+
+.capability-copy h3 {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2.4vw, 29px);
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+
+/* Tick lists used by capabilities, the mobile band and workspace cards. */
+.ticks {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+.ticks.tight {
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.ticks li {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 10px;
+  align-items: start;
+  font-size: 13.5px;
+  color: var(--text-2);
+}
+
+.ticks li svg {
+  color: var(--brand);
+  margin-top: 3px;
+}
+
+/* ------------------------------------------------------ landing: mobile app */
+
+.mobile-band {
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  background: var(--surface-2);
+  background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+.mobile-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 76px 34px;
+  display: grid;
+  grid-template-columns: 1fr 0.9fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.mobile-copy h2 {
+  font-size: clamp(25px, 3vw, 34px);
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+
+.mobile-mocks {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 18px;
+  perspective: 1200px;
+}
+
+/* A drawn phone, not a screenshot — it stays sharp at any density and themes itself. */
+.phone {
+  position: relative;
+  width: 208px;
+  flex: none;
+  border-radius: 30px;
+  border: 1px solid var(--hairline-strong);
+  background: var(--bg);
+  padding: 9px 9px 0;
+  box-shadow: 0 34px 60px -38px rgb(0 0 0 / 0.6);
+  transition: transform 0.5s var(--ease-out);
+}
+
+.phone-applications {
+  transform: rotate(-4deg) translateY(16px) scale(0.94);
+  opacity: 0.96;
+}
+
+.phone-home {
+  transform: rotate(2.5deg);
+}
+
+.mobile-band.shown .phone-applications {
+  transform: rotate(-6deg) translateY(10px) scale(0.94);
+}
+
+.mobile-band:hover .phone-home {
+  transform: rotate(0deg) translateY(-6px);
+}
+
+.phone-notch {
+  width: 58px;
+  height: 4px;
+  border-radius: 3px;
+  background: var(--hairline-strong);
+  margin: 0 auto 8px;
+}
+
+.phone-screen {
+  display: grid;
+  gap: 8px;
+  padding: 0 3px;
+  min-height: 268px;
+  align-content: start;
+}
+
+.phone-head {
+  display: grid;
+  gap: 1px;
+  margin-bottom: 2px;
+}
+
+.phone-head .mono {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+}
+
+.phone-head strong {
+  font-family: var(--font-display);
+  font-size: 17px;
+  letter-spacing: -0.02em;
+}
+
+.phone-card {
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 9px 10px;
+  display: grid;
+  gap: 7px;
+  font-size: 10.5px;
+}
+
+.phone-card.slim {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.phone-card.slim em {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--brand);
+}
+
+.phone-card .mono {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+}
+
+.phone-pill {
+  font-family: var(--font-mono);
+  font-size: 7.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--hairline-strong);
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.phone-pill.ok {
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 40%, transparent);
+}
+
+.phone-bar {
+  height: 4px;
+  border-radius: 3px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.phone-bar i {
+  display: block;
+  height: 100%;
+  background: var(--brand);
+  border-radius: 3px;
+  transform-origin: left;
+  animation: bar-fill 1s var(--ease-out) both;
+}
+
+@keyframes bar-fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.phone-ring {
+  position: relative;
+  justify-self: center;
+  display: grid;
+  place-items: center;
+}
+
+.phone-ring svg {
+  transform: rotate(-90deg);
+}
+
+.phone-ring .ring-track {
+  fill: none;
+  stroke: var(--surface-3);
+  stroke-width: 5;
+}
+
+.phone-ring .ring-value {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 182;
+  stroke-dashoffset: 33;
+  animation: ring-fill 1.1s var(--ease-out) both;
+}
+
+@keyframes ring-fill {
+  from {
+    stroke-dashoffset: 182;
+  }
+}
+
+.phone-ring-num {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+
+.phone-tabs {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid var(--hairline);
+  margin-top: 10px;
+  padding: 8px 4px 10px;
+  color: var(--text-3);
+}
+
+.phone-tabs .on {
+  color: var(--brand);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phone-bar i,
+  .phone-ring .ring-value {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------- landing: workspace cards */
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.workspace-card {
+  transition: transform 0.28s var(--ease-out), border-color 0.28s var(--ease);
+}
+
+.workspace-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--hairline-strong);
+}
+
+.workspace-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 28px;
+  align-items: stretch;
+}
+
+.workspace-strip figure {
+  margin: 0;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--hairline-strong);
+  aspect-ratio: 4 / 3;
+}
+
+.workspace-strip img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.8) contrast(1.02);
+}
+
+[data-theme='dark'] .workspace-strip img {
+  filter: saturate(0.7) brightness(0.8) contrast(1.05);
+}
+
+.workspace-note {
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 20px;
+  background: var(--surface);
+  display: grid;
+  align-content: center;
+  gap: 8px;
+}
+
+/* ------------------------------------------------------- landing: responsive */
+
+@media (max-width: 980px) {
+  .landing-links {
+    display: none;
+  }
+  .capability,
+  .capability.flip {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .capability.flip .capability-media {
+    order: 0;
+  }
+  .capabilities {
+    gap: 54px;
+  }
+  .mobile-inner {
+    grid-template-columns: 1fr;
+    gap: 44px;
+    padding: 58px 22px;
+  }
+  .workspace-grid,
+  .workspace-strip {
+    grid-template-columns: 1fr;
+  }
+  .hero-visual .hero-panel {
+    margin-top: -60px;
+    width: min(100%, 340px);
+  }
+}
+
+@media (max-width: 640px) {
+  .mobile-inner {
+    padding: 48px 18px;
+  }
+  .phone {
+    width: 168px;
+  }
+  .mobile-mocks {
+    gap: 10px;
+  }
+  .hero-visual .hero-panel {
+    margin: -44px auto 0;
+  }
+}
+
+/* The auth aside carries the brand, but it is hidden on phones — this link is not. */
+.auth-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  color: var(--text-3);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.auth-back:hover {
+  color: var(--text);
+  border-color: var(--hairline-strong);
 }

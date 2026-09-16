@@ -70,9 +70,19 @@ api.interceptors.response.use(
 );
 
 /** Normalises NestJS validation and domain errors into a single message. */
+/** The API is not answering at all: dead connection, or a proxy with nothing behind it. */
+const UNREACHABLE =
+  'Could not reach the server. Check that the API is running, then try again.';
+
 export function errorMessage(error: unknown, fallback = 'Something went wrong'): string {
   if (axios.isAxiosError(error)) {
-    const data = error.response?.data as { message?: string | string[] } | undefined;
+    /* No response means the request never landed — DNS, refused connection, timeout. */
+    if (!error.response) return UNREACHABLE;
+
+    /* A gateway status comes from the proxy in front of the API, not from the API. */
+    if ([502, 503, 504].includes(error.response.status)) return UNREACHABLE;
+
+    const data = error.response.data as { message?: string | string[] } | undefined;
     if (Array.isArray(data?.message)) return data.message.join(', ');
     if (typeof data?.message === 'string') return data.message;
     return error.message || fallback;
