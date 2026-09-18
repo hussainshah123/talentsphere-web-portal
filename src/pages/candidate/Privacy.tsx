@@ -5,8 +5,24 @@ import { Alert, Card, Loading } from '../../components/ui';
 import { api, errorMessage } from '../../lib/api';
 import type { CandidatePrivacy } from '../../lib/types';
 
+const VISIBILITY_OPTIONS: Array<{ value: NonNullable<CandidatePrivacy['visibility']>; label: string; hint: string }> = [
+  {
+    value: 'SEARCHABLE',
+    label: 'Searchable — verified companies can discover me',
+    hint: 'You appear in candidate search with your name and qualifications.',
+  },
+  {
+    value: 'ANONYMOUS',
+    label: 'Anonymous — show my qualifications, not who I am',
+    hint: 'Companies see your experience, skills and scores under a reference, not your name. Applying to their job reveals it.',
+  },
+  {
+    value: 'PRIVATE',
+    label: 'Private — only companies I apply to',
+    hint: 'You are removed from candidate search entirely. Nobody finds you; you go to them.',
+  },
+];
 const TOGGLES: Array<{ key: keyof CandidatePrivacy; label: string; hint: string }> = [
-  { key: 'profileVisible', label: 'Profile visible in candidate search', hint: 'Turn off to hide from every company without deleting anything.' },
   { key: 'allowRecruiterContact', label: 'Allow recruiters to message me', hint: 'Recruiters can never see your email or phone, only send platform messages.' },
   { key: 'allowCvDownload', label: 'Allow verified recruiters to download my CV', hint: 'Off by default. Downloads are always logged.' },
   { key: 'showEmail', label: 'Show my email address', hint: 'Off by default.' },
@@ -77,6 +93,31 @@ export default function PrivacySettings() {
         </div>
       </div>
 
+      <Card title="Who can find you" icon="eye">
+        <p className="muted" style={{ fontSize: 13 }}>
+          This is the setting that decides discoverability. The toggles below control what a
+          company sees once it can see you at all.
+        </p>
+        {VISIBILITY_OPTIONS.map((option) => (
+          <label key={option.value} className="checkbox">
+            <input
+              type="radio"
+              name="visibility"
+              checked={(values.visibility ?? 'SEARCHABLE') === option.value}
+              onChange={() => {
+                setValues({ ...values, visibility: option.value });
+                save.mutate({ visibility: option.value });
+              }}
+            />
+            <span>
+              {option.label}
+              <div className="muted" style={{ fontSize: 12.5 }}>
+                {option.hint}
+              </div>
+            </span>
+          </label>
+        ))}
+      </Card>
       <Card title="Visibility & contact">
         {TOGGLES.map((toggle) => (
           <label key={toggle.key} className="checkbox">

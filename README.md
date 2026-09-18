@@ -86,5 +86,32 @@ src/
   so with JS off nothing is invisible.
 - **The phone mockups are drawn in CSS**, not screenshots, so they stay sharp at any density and
   follow the theme.
+- **`/find-jobs` is the worldwide board** with the full filter set — title and keywords,
+  country/state/city, work arrangement, employment type, experience level and range, salary,
+  industry, skills, education, posted date, company, work authorisation, visa sponsorship, and
+  the two that matter most for remote work: **I can work from** and **my time zone**. Those last
+  two read a job structured remote-eligibility field, so a job advertised as remote but limited
+  to other countries drops out instead of wasting an application.
+- **`/saved-jobs`** is the step before applying. Saving tells the company nothing.
+- **Privacy is a three-way choice**, not a toggle: searchable, anonymous (qualifications visible,
+  name withheld until you apply) or private (out of search entirely).
+- **Recruiters get screening buckets** on a job — strong / potential / review by advisory match —
+  plus private hiring-team notes per applicant that the candidate never sees.
+- **The sidebar floats.** It is inset from all four edges by `--sidebar-inset`, rounded, and
+  lifted with a shadow, so the page ground shows around it. In dark mode it is a *raised*
+  surface — it used to be darker than the page, which made a floating panel sink into the
+  ground instead of lifting off it — with a hairline so the rounded edge stays legible.
+  Three rules depend on that one token agreeing: the margin, the height it subtracts from the
+  viewport, and the padding the shell holds open while railed.
+- **The collapsed sidebar expands on hover, over the page.** Railed, it leaves the flow and the
+  shell holds its 68px open with padding, so widening to 256px floats the panel above the
+  dashboard instead of reflowing it. Keyboard focus expands it too, but through
+  `:has(:focus-visible)` rather than `:focus-within` — the collapse button lives inside the
+  sidebar, so plain focus-within would re-expand the rail the instant you clicked collapse.
+  The keyboard case is a React-set class, not `:has(:focus-visible)`: an unsupported
+  `:has()` voids the whole rule, which dropped every collapsed style and left full-size
+  labels crammed into the 68px rail on older browsers.
+  Hover expansion is gated on `@media (hover: hover)`; touch devices keep the tap toggle, and
+  below 861px the drawer takes over entirely.
 - **Styling** is a small hand-written design system in `src/index.css` — CSS variables, cards,
   tables and form primitives, responsive down to phone width. No UI framework dependency.

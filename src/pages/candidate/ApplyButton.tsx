@@ -18,6 +18,27 @@ export default function ApplyButton({ jobId, jobOpen = true }: { jobId: string; 
   const [open, setOpen] = useState(false);
   const [coverNote, setCoverNote] = useState('');
 
+  const generate = useMutation({
+    mutationFn: async () =>
+      (await api.post<{ enabled: boolean; letter: { body: string; placeholders: string[] } | null; message?: string }>(
+        '/candidates/me/cover-letter',
+        { jobId },
+      )).data,
+    onSuccess: (result) => {
+      if (!result.letter) {
+        toast.error(result.message ?? 'The AI service did not respond. Try again in a moment.');
+        return;
+      }
+      setCoverNote(result.letter.body);
+      toast.success(
+        result.letter.placeholders.length > 0
+          ? 'Draft ready — fill in the bracketed placeholders before sending'
+          : 'Draft ready — edit it before sending',
+      );
+    },
+    onError: (error) => toast.error(errorMessage(error, 'Could not generate a cover letter')),
+  });
+
   const { data, isLoading } = useQuery({
     queryKey: ['application-eligibility', jobId],
     queryFn: async () =>
@@ -93,8 +114,17 @@ export default function ApplyButton({ jobId, jobOpen = true }: { jobId: string; 
           <p className="muted">
             Your profile and primary CV go with this application. You can withdraw it at any time.
           </p>
+          <div className="row between" style={{ marginBottom: 6 }}>
+            <span className="hint mb-0">Cover note</span>
+            <button
+              className="secondary btn-sm"
+              disabled={generate.isPending}
+              onClick={() => generate.mutate()}
+            >
+              {generate.isPending ? 'Writing…' : 'Generate with AI'}
+            </button>
+          </div>
           <label>
-            Cover note
             <textarea
               value={coverNote}
               onChange={(event) => setCoverNote(event.target.value)}
@@ -102,7 +132,10 @@ export default function ApplyButton({ jobId, jobOpen = true }: { jobId: string; 
               maxLength={4000}
               rows={5}
             />
-            <span className="hint">Optional — why you, for this role, in a few lines.</span>
+            <span className="hint">
+              Optional. An AI draft is built from your CV and this job — read it, edit it, and fill in
+              anything in [brackets] before sending.
+            </span>
           </label>
         </Modal>
       )}

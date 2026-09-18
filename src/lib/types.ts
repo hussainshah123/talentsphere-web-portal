@@ -85,7 +85,11 @@ export interface CandidatePreferences {
   jobAlertsEnabled: boolean;
 }
 
+export type ProfileVisibility = 'PRIVATE' | 'SEARCHABLE' | 'ANONYMOUS';
+
 export interface CandidatePrivacy {
+  /** The discoverability choice. `profileVisible` is derived from it server-side. */
+  visibility: ProfileVisibility;
   profileVisible: boolean;
   showEmail: boolean;
   showPhone: boolean;
@@ -95,6 +99,32 @@ export interface CandidatePrivacy {
   showSalary: boolean;
   allowRecruiterContact: boolean;
   allowCvDownload: boolean;
+}
+
+export interface Certification {
+  id: string;
+  name: string;
+  issuer: string | null;
+  credentialId: string | null;
+  credentialUrl: string | null;
+  issuedAt: string | null;
+  expiresAt: string | null;
+}
+
+export type LanguageProficiency = 'BASIC' | 'CONVERSATIONAL' | 'PROFESSIONAL' | 'FLUENT' | 'NATIVE';
+
+export interface CandidateLanguage {
+  id: string;
+  name: string;
+  proficiency: LanguageProficiency;
+}
+
+export interface SavedJob {
+  id: string;
+  jobId: string;
+  note: string | null;
+  createdAt: string;
+  job: Job;
 }
 
 export interface CandidateProfile {
@@ -436,6 +466,7 @@ export interface AiJobFitResponse {
 
 export type ApplicationStatus =
   | 'SUBMITTED'
+  | 'RECEIVED'
   | 'IN_REVIEW'
   | 'SHORTLISTED'
   | 'INTERVIEW'

@@ -69,6 +69,8 @@
   --info-soft: #e6edf6;
 
   --sidebar-bg: var(--ink-900);
+  /* Edge on the floating panel. Light needs none; dark needs one to read as raised. */
+  --sidebar-edge: transparent;
   --sidebar-text: rgba(255, 255, 255, 0.72);
   --sidebar-text-strong: #ffffff;
   --sidebar-hairline: rgba(255, 255, 255, 0.1);
@@ -92,6 +94,10 @@
   --r-pill: 999px;
 
   --sidebar-w: 256px;
+  /* What the rail widens back out to on hover. */
+  --sidebar-expanded: 256px;
+  /* Air around the floating sidebar. Three rules depend on this agreeing. */
+  --sidebar-inset: 12px;
   --topbar-h: 64px;
   --measure: 68ch;
 
@@ -140,7 +146,8 @@
   --info: #7ba6dd;
   --info-soft: #182634;
 
-  --sidebar-bg: #0b0e12;
+  --sidebar-bg: #151a21;
+  --sidebar-edge: rgba(255, 255, 255, 0.08);
   --sidebar-text: rgba(255, 255, 255, 0.66);
   --sidebar-text-strong: #ffffff;
   --sidebar-hairline: rgba(255, 255, 255, 0.08);
@@ -416,8 +423,14 @@ code {
   display: flex;
   flex-direction: column;
   position: sticky;
-  top: 0;
-  height: 100vh;
+  /* Inset from all four edges so the page ground shows around it. */
+  top: var(--sidebar-inset);
+  margin: var(--sidebar-inset);
+  height: calc(100vh - var(--sidebar-inset) * 2);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--sidebar-edge);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
   z-index: 50;
   transition: width 0.26s var(--ease), transform 0.3s var(--ease);
 }
@@ -642,53 +655,99 @@ code {
   white-space: nowrap;
 }
 
-/* ---- Rail mode (desktop collapse) -------------------------------------- */
+/* ---- Rail mode (desktop collapse) --------------------------------------
+ *
+ * Railed, the sidebar leaves the flow and the shell holds its place open with
+ * padding. Widening it on hover then floats the panel over the page instead of
+ * pushing it, so the dashboard never reflows under the pointer.
+ *
+ * The collapsed look is scoped to the rail at rest, so hovering restores every
+ * label through one condition rather than a second set of undo rules.
+ */
+@media (min-width: 861px) {
+  .app-shell.rail {
+    --sidebar-w: 68px;
+    /* The rail plus the air on both sides of it. */
+    padding-left: calc(var(--sidebar-w) + var(--sidebar-inset) * 2);
+  }
 
-.app-shell.rail {
-  --sidebar-w: 68px;
-}
+  .app-shell.rail .sidebar {
+    position: fixed;
+    left: var(--sidebar-inset);
+    top: var(--sidebar-inset);
+    margin: 0;
+    height: calc(100vh - var(--sidebar-inset) * 2);
+  }
 
-.app-shell.rail .brand-text,
-.app-shell.rail .nav-label,
-.app-shell.rail .sidebar-footer {
-  opacity: 0;
-  width: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
+  /*
+   * Only where a pointer can hover — a touch device keeps the collapse toggle.
+   * Keyboard focus expands it too, through a class React sets on real keyboard focus.
+   * A CSS-only `:focus-within` would re-expand the rail the instant you clicked
+   * collapse, since that button lives inside the sidebar. `:has(:focus-visible)`
+   * fixed that but silently dropped every rule below it on a browser without
+   * `:has()`, leaving full-size labels crammed into a 68px column.
+   */
+  @media (hover: hover) {
+    .app-shell.rail .sidebar:hover,
+    .app-shell.rail .sidebar.kb-focus {
+      width: var(--sidebar-expanded);
+      box-shadow: var(--shadow-lg);
+    }
+  }
 
-.app-shell.rail .nav-group-label {
-  opacity: 0;
-  height: 10px;
-  padding: 6px 0 0;
-}
+  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .brand-text,
+  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .nav-label,
+  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .sidebar-footer {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
 
-.app-shell.rail .nav-link,
-.app-shell.rail .sidebar-collapse {
-  justify-content: center;
-  padding-left: 11px;
-  padding-right: 11px;
-  gap: 0;
-}
+  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .nav-group-label {
+    opacity: 0;
+    height: 10px;
+    padding: 6px 0 0;
+  }
 
-.app-shell.rail .nav-link:hover {
-  padding-left: 11px;
-}
+  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .nav-link,
+  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .sidebar-collapse {
+    justify-content: center;
+    padding-left: 11px;
+    padding-right: 11px;
+    gap: 0;
+  }
 
-.app-shell.rail .nav-count {
-  position: absolute;
-  top: 3px;
-  right: 6px;
-  min-width: 15px;
-  height: 15px;
-  font-size: 9px;
-  margin: 0;
-}
+  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .nav-link:hover {
+    padding-left: 11px;
+  }
 
-.app-shell.rail .brand {
-  justify-content: center;
-  padding-left: 0;
-  padding-right: 0;
+  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .nav-count {
+    position: absolute;
+    top: 3px;
+    right: 6px;
+    min-width: 15px;
+    height: 15px;
+    font-size: 9px;
+    margin: 0;
+  }
+
+  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .brand {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Labels fade back in rather than snapping, in step with the width. */
+  .app-shell.rail .brand-text,
+  .app-shell.rail .nav-label,
+  .app-shell.rail .sidebar-footer,
+  .app-shell.rail .nav-group-label {
+    transition:
+      opacity 0.2s var(--ease) 0.04s,
+      width 0.26s var(--ease),
+      height 0.26s var(--ease);
+  }
 }
 
 /* ---- Mobile drawer ------------------------------------------------------ */
@@ -712,10 +771,14 @@ code {
 }
 
 @media (max-width: 860px) {
+  /* As a drawer it slides from the edge, so it drops the float and the left radius. */
   .sidebar {
     position: fixed;
     inset: 0 auto 0 0;
     width: min(84vw, 300px);
+    height: 100%;
+    margin: 0;
+    border-radius: 0 var(--r-lg) var(--r-lg) 0;
     transform: translateX(-102%);
   }
 
@@ -742,40 +805,11 @@ code {
     display: none;
   }
 
-  /* The rail only makes sense on desktop. */
+  /* The rail block is desktop-only, so there is nothing to undo here — but the
+     shell must not keep padding open for a sidebar that is now a drawer. */
   .app-shell.rail {
     --sidebar-w: 256px;
-  }
-
-  .app-shell.rail .brand-text,
-  .app-shell.rail .nav-label,
-  .app-shell.rail .sidebar-footer {
-    opacity: 1;
-    width: auto;
-    pointer-events: auto;
-  }
-
-  .app-shell.rail .nav-group-label {
-    opacity: 1;
-    height: auto;
-    padding: 18px 12px 8px;
-  }
-
-  .app-shell.rail .nav-link {
-    justify-content: flex-start;
-    gap: 10px;
-  }
-
-  .app-shell.rail .brand {
-    justify-content: flex-start;
-  }
-
-  .app-shell.rail .nav-count {
-    position: static;
-    min-width: 18px;
-    height: 18px;
-    font-size: 10px;
-    margin-left: auto;
+    padding-left: 0;
   }
 }
 
@@ -2898,4 +2932,79 @@ hr,
 .auth-back:hover {
   color: var(--text);
   border-color: var(--hairline-strong);
+}
+
+/* ------------------------------------------------- recruiter: screening row */
+
+.screening-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.screening-bucket {
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--hairline-strong);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  background: var(--surface-2);
+  display: grid;
+  gap: 2px;
+}
+
+.screening-bucket strong {
+  font-family: var(--font-display);
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.screening-bucket span {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.screening-bucket.strong {
+  border-left-color: var(--success);
+}
+
+.screening-bucket.potential {
+  border-left-color: var(--warning);
+}
+
+@media (max-width: 720px) {
+  .screening-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Hiring-team notes on an application. */
+.notes-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: grid;
+  gap: 8px;
+}
+
+.notes-list li {
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  padding: 9px 11px;
+  background: var(--surface-2);
+}
+
+/* A row inside a card listing one saved item with a remove control. */
+.list-row {
+  padding: 11px 0;
+  border-top: 1px solid var(--hairline);
+  align-items: flex-start;
+}
+
+.list-row:first-of-type {
+  border-top: none;
 }

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useToast } from '../../components/Toast';
 import { Badge, Card, Empty, Modal, SkeletonCard } from '../../components/ui';
 import { api, errorMessage } from '../../lib/api';
+import ApplicantNotes from './ApplicantNotes';
 import { formatDate, relativeTime } from '../../lib/format';
 import { RECRUITER_STATUSES, isClosed, statusLabel, statusTone } from '../../lib/applications';
 import type { Application, ApplicationStatus } from '../../lib/types';
@@ -58,6 +59,18 @@ export default function JobApplicants({ jobId }: { jobId: string }) {
     onError: (error) => toast.error(errorMessage(error, 'Could not move this application')),
   });
 
+  const { data: screening } = useQuery({
+    queryKey: ['job-screening', jobId],
+    queryFn: async () =>
+      (
+        await api.get<{
+          total: number;
+          buckets: { strong: number; potential: number; review: number };
+          disclaimer: string;
+        }>(`/applications/job/${jobId}/screening`)
+      ).data,
+  });
+
   const items = data?.items ?? [];
 
   return (
@@ -66,6 +79,23 @@ export default function JobApplicants({ jobId }: { jobId: string }) {
         Candidates who applied to this job. ATS and match are snapshots from the day they applied, so a
         later CV edit does not rewrite what you received.
       </p>
+
+      {screening && screening.total > 0 && (
+        <div className="screening-row">
+          <div className="screening-bucket strong">
+            <strong>{screening.buckets.strong}</strong>
+            <span>Strong match</span>
+          </div>
+          <div className="screening-bucket potential">
+            <strong>{screening.buckets.potential}</strong>
+            <span>Potential match</span>
+          </div>
+          <div className="screening-bucket">
+            <strong>{screening.buckets.review}</strong>
+            <span>Review</span>
+          </div>
+        </div>
+      )}
 
       <div className="chip-row mb-2">
         {FILTERS.map((status) => (
@@ -121,6 +151,12 @@ export default function JobApplicants({ jobId }: { jobId: string }) {
                         .filter(Boolean)
                         .join(', ') || 'Location hidden'}
                     </div>
+                    <details className="mt-1">
+                      <summary className="muted" style={{ fontSize: 13, cursor: 'pointer' }}>
+                        Notes
+                      </summary>
+                      <ApplicantNotes applicationId={application.id} />
+                    </details>
                     {application.coverNote && (
                       <details className="mt-1">
                         <summary className="muted" style={{ fontSize: 13, cursor: 'pointer' }}>

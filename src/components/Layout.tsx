@@ -29,7 +29,9 @@ const NAV: Record<UserRole, Array<{ group: string; items: NavItem[] }>> = {
     {
       group: 'Opportunities',
       items: [
+        { to: '/find-jobs', label: 'Find jobs', icon: 'search' },
         { to: '/jobs', label: 'Recommended jobs', icon: 'discover' },
+        { to: '/saved-jobs', label: 'Saved jobs', icon: 'bookmark' },
         { to: '/applications', label: 'My applications', icon: 'applications' },
         { to: '/messages', label: 'Messages', icon: 'messages' },
       ],
@@ -105,6 +107,20 @@ const NAV: Record<UserRole, Array<{ group: string; items: NavItem[] }>> = {
   ],
 };
 
+/**
+ * True only when focus arrived by keyboard. `:focus-visible` is far more widely
+ * supported than `:has()`, but guard it anyway: a browser that does not know the
+ * selector throws on `matches`, and a mouse click must not expand the rail.
+ */
+function isKeyboardFocus(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false;
+  try {
+    return target.matches(':focus-visible');
+  } catch {
+    return false;
+  }
+}
+
 const COLLAPSE_KEY = 'hr.sidebarCollapsed';
 
 export default function Layout() {
@@ -115,6 +131,13 @@ export default function Layout() {
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSE_KEY) === '1');
+  /*
+   * Whether focus inside the sidebar came from the keyboard. Driven here rather than
+   * in CSS: :focus-within would re-expand the rail the moment you clicked collapse
+   * (that button is inside the sidebar), and :has(:focus-visible) silently voids every
+   * rule using it on a browser without :has().
+   */
+  const [keyboardFocus, setKeyboardFocus] = useState(false);
 
   // Navigating on a phone should close the drawer, never leave it hanging open.
   useEffect(() => {
@@ -169,9 +192,11 @@ export default function Layout() {
       />
 
       <aside
-        className={`sidebar ${drawerOpen ? 'open' : ''}`}
+        className={`sidebar ${drawerOpen ? 'open' : ''} ${keyboardFocus ? 'kb-focus' : ''}`}
         id="app-sidebar"
         aria-label="Main navigation"
+        onFocus={(event) => setKeyboardFocus(isKeyboardFocus(event.target))}
+        onBlur={() => setKeyboardFocus(false)}
       >
         <div className="brand">
           <span className="brand-mark">

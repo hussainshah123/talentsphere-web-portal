@@ -17,6 +17,8 @@ import CvAts from './pages/candidate/CvAts';
 import VerificationCenter from './pages/candidate/VerificationCenter';
 import ProfilePreview from './pages/candidate/ProfilePreview';
 import CandidateJobs from './pages/candidate/Jobs';
+import FindJobs from './pages/candidate/FindJobs';
+import SavedJobs from './pages/candidate/SavedJobs';
 import CandidateApplications from './pages/candidate/Applications';
 import PrivacySettings from './pages/candidate/Privacy';
 import Messages from './pages/shared/Messages';
@@ -138,6 +140,22 @@ export default function App() {
           }
         />
         <Route path="/messages" element={<Messages />} />
+        <Route
+          path="/saved-jobs"
+          element={
+            <ProtectedRoute roles={['CANDIDATE']}>
+              <SavedJobs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/find-jobs"
+          element={
+            <ProtectedRoute roles={['CANDIDATE']}>
+              <FindJobs />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/applications"
           element={

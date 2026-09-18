@@ -32,6 +32,17 @@ export default function RecruiterJobs() {
       salaryMin: '',
       salaryMax: '',
       experienceMin: '',
+      experienceMax: '',
+      state: '',
+      timezone: '',
+      industry: '',
+      experienceLevel: '',
+      educationLevel: '',
+      remoteEligibility: '',
+      remoteCountries: '',
+      remoteTimezones: '',
+      workAuthorization: 'EMPLOYER_SPECIFIED',
+      visaSponsorship: 'no',
       status: 'PUBLISHED',
     },
   });
@@ -50,6 +61,21 @@ export default function RecruiterJobs() {
         salaryMin: values.salaryMin ? Number(values.salaryMin) : undefined,
         salaryMax: values.salaryMax ? Number(values.salaryMax) : undefined,
         experienceMin: values.experienceMin ? Number(values.experienceMin) : undefined,
+        experienceMax: values.experienceMax ? Number(values.experienceMax) : undefined,
+        state: values.state || undefined,
+        timezone: values.timezone || undefined,
+        industry: values.industry || undefined,
+        experienceLevel: values.experienceLevel || undefined,
+        educationLevel: values.educationLevel || undefined,
+        remoteEligibility: values.remoteEligibility || undefined,
+        remoteCountries: values.remoteCountries
+          ? values.remoteCountries.split(',').map((entry) => entry.trim()).filter(Boolean)
+          : undefined,
+        remoteTimezones: values.remoteTimezones
+          ? values.remoteTimezones.split(',').map((entry) => entry.trim()).filter(Boolean)
+          : undefined,
+        workAuthorization: values.workAuthorization || undefined,
+        visaSponsorship: values.visaSponsorship === 'yes',
         status: values.status,
       })).data,
     onSuccess: () => {
@@ -130,10 +156,81 @@ export default function RecruiterJobs() {
               <Field label="Min experience (years)">
                 <input type="number" step="0.5" {...register('experienceMin')} />
               </Field>
+              <Field label="Max experience (years)">
+                <input type="number" step="0.5" {...register('experienceMax')} />
+              </Field>
+              <Field label="State / province">
+                <input {...register('state')} />
+              </Field>
+              <Field label="Industry">
+                <input placeholder="software" {...register('industry')} />
+              </Field>
+              <Field label="Experience level">
+                <select {...register('experienceLevel')}>
+                  <option value="">Not specified</option>
+                  <option value="INTERNSHIP">Internship</option>
+                  <option value="ENTRY">Entry</option>
+                  <option value="JUNIOR">Junior</option>
+                  <option value="MID">Mid</option>
+                  <option value="SENIOR">Senior</option>
+                  <option value="LEAD">Lead</option>
+                  <option value="EXECUTIVE">Executive</option>
+                </select>
+              </Field>
+              <Field label="Minimum education">
+                <select {...register('educationLevel')}>
+                  <option value="">Not specified</option>
+                  <option value="NONE">None required</option>
+                  <option value="HIGH_SCHOOL">High school</option>
+                  <option value="DIPLOMA">Diploma</option>
+                  <option value="BACHELORS">Bachelors</option>
+                  <option value="MASTERS">Masters</option>
+                  <option value="DOCTORATE">Doctorate</option>
+                </select>
+              </Field>
               <Field label="Status">
                 <select {...register('status')}>
                   <option value="PUBLISHED">Published</option>
                   <option value="DRAFT">Draft</option>
+                </select>
+              </Field>
+            </div>
+
+            <h4 className="mt-2 mb-0">Remote eligibility &amp; work authorisation</h4>
+            <p className="muted" style={{ fontSize: 13 }}>
+              These are what candidates filter on. Leaving eligibility unset treats the job as
+              unrestricted — say so explicitly if it is not, or people apply who cannot take it.
+            </p>
+            <div className="grid cols-4">
+              <Field label="Remote eligibility">
+                <select {...register('remoteEligibility')}>
+                  <option value="">Unrestricted</option>
+                  <option value="WORLDWIDE">Worldwide</option>
+                  <option value="SPECIFIC_COUNTRIES">Specific countries</option>
+                  <option value="SPECIFIC_REGIONS">Specific regions</option>
+                  <option value="SPECIFIC_TIMEZONES">Specific time zones</option>
+                </select>
+              </Field>
+              <Field label="Countries / regions">
+                <input placeholder="Germany, Poland" {...register('remoteCountries')} />
+              </Field>
+              <Field label="Time zones">
+                <input placeholder="EST, GMT" {...register('remoteTimezones')} />
+              </Field>
+              <Field label="Company time zone">
+                <input placeholder="GMT" {...register('timezone')} />
+              </Field>
+              <Field label="Work authorisation">
+                <select {...register('workAuthorization')}>
+                  <option value="EMPLOYER_SPECIFIED">Employer specified</option>
+                  <option value="NOT_REQUIRED">Not required</option>
+                  <option value="REQUIRED">Required</option>
+                </select>
+              </Field>
+              <Field label="Visa sponsorship">
+                <select {...register('visaSponsorship')}>
+                  <option value="no">Not offered</option>
+                  <option value="yes">Offered</option>
                 </select>
               </Field>
             </div>

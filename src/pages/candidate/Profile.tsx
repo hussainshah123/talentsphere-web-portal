@@ -5,6 +5,7 @@ import { useToast } from '../../components/Toast';
 import { Alert, Card, Field, Loading, Progress } from '../../components/ui';
 import { api, errorMessage } from '../../lib/api';
 import { formatMonth } from '../../lib/format';
+import { CertificationsSection, LanguagesSection } from './CredentialsSections';
 import type { CandidateProfile } from '../../lib/types';
 
 interface ProfileForm {
@@ -254,6 +255,8 @@ export default function Profile() {
       <SkillsSection profile={profile} onChange={invalidate} />
       <ExperienceSection profile={profile} onChange={invalidate} />
       <EducationSection profile={profile} onChange={invalidate} />
+      <CertificationsSection />
+      <LanguagesSection />
       <PreferencesSection profile={profile} onChange={invalidate} />
     </>
   );

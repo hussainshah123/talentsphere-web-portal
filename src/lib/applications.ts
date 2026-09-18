@@ -3,6 +3,7 @@ import type { ApplicationStatus } from './types';
 /** The happy path, in order. Used to draw how far an application has travelled. */
 export const PIPELINE: ApplicationStatus[] = [
   'SUBMITTED',
+  'RECEIVED',
   'IN_REVIEW',
   'SHORTLISTED',
   'INTERVIEW',
@@ -12,6 +13,7 @@ export const PIPELINE: ApplicationStatus[] = [
 
 /** Statuses a recruiter may set. The candidate alone withdraws. */
 export const RECRUITER_STATUSES: ApplicationStatus[] = [
+  'RECEIVED',
   'IN_REVIEW',
   'SHORTLISTED',
   'INTERVIEW',
@@ -52,6 +54,8 @@ export function statusExplainer(status: ApplicationStatus) {
   switch (status) {
     case 'SUBMITTED':
       return 'Your application is with the company. They have not opened it yet.';
+    case 'RECEIVED':
+      return 'The company has your application and has acknowledged it.';
     case 'IN_REVIEW':
       return 'Someone at the company is reading your application.';
     case 'SHORTLISTED':
