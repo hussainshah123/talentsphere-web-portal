@@ -121,8 +121,6 @@ function isKeyboardFocus(target: EventTarget | null): boolean {
   }
 }
 
-const COLLAPSE_KEY = 'hr.sidebarCollapsed';
-
 export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -130,12 +128,13 @@ export default function Layout() {
   const { isDark, toggle } = useTheme();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSE_KEY) === '1');
   /*
-   * Whether focus inside the sidebar came from the keyboard. Driven here rather than
-   * in CSS: :focus-within would re-expand the rail the moment you clicked collapse
-   * (that button is inside the sidebar), and :has(:focus-visible) silently voids every
-   * rule using it on a browser without :has().
+   * Whether focus inside the sidebar came from the keyboard. The rail widens on
+   * hover, and a keyboard user has no pointer — so focus has to widen it too.
+   * Driven here rather than in CSS: `:focus-within` also fires on a mouse click,
+   * which would leave the rail stuck open after every navigation, and
+   * `:has(:focus-visible)` silently voids every rule using it on a browser
+   * without `:has()`.
    */
   const [keyboardFocus, setKeyboardFocus] = useState(false);
 
@@ -158,13 +157,6 @@ export default function Layout() {
     };
   }, [drawerOpen]);
 
-  const toggleCollapsed = () => {
-    setCollapsed((current) => {
-      localStorage.setItem(COLLAPSE_KEY, current ? '0' : '1');
-      return !current;
-    });
-  };
-
   const { data: unread } = useQuery({
     queryKey: ['unread-messages'],
     queryFn: async () => (await api.get<{ unread: number }>('/conversations/unread-count')).data,
@@ -184,7 +176,7 @@ export default function Layout() {
         : 'Administration';
 
   return (
-    <div className={`app-shell ${collapsed ? 'rail' : ''}`}>
+    <div className="app-shell">
       <div
         className={`sidebar-scrim ${drawerOpen ? 'open' : ''}`}
         onClick={() => setDrawerOpen(false)}
@@ -224,7 +216,7 @@ export default function Layout() {
                   key={item.to}
                   to={item.to}
                   end={item.to === '/admin' || item.to === '/recruiter'}
-                  title={collapsed ? item.label : undefined}
+                  title={item.label}
                   className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
                   style={{ animationDelay: `${(groupIndex * 4 + itemIndex) * 22}ms` }}
                 >
@@ -238,16 +230,6 @@ export default function Layout() {
             </div>
           ))}
         </nav>
-
-        <button
-          className="sidebar-collapse"
-          onClick={toggleCollapsed}
-          aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}
-          title={collapsed ? 'Expand' : 'Collapse'}
-        >
-          <AppIcon name={collapsed ? 'forward' : 'back'} size={16} />
-          <span className="nav-label">Collapse</span>
-        </button>
 
         <div className="sidebar-footer">
           Advisory scores
@@ -328,7 +310,9 @@ export default function Layout() {
           </div>
         </header>
 
-        <main className="page">
+        {/* Keyed on the path so the entrance animation runs on every navigation,
+            not only the first mount of the shell. */}
+        <main className="page" key={location.pathname}>
           <Outlet />
         </main>
       </div>

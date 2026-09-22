@@ -36,7 +36,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', isDark ? '#080f1b' : '#f6f8fb');
+      /* Keep these in step with --bg in index.css; this is the browser chrome. */
+      ?.setAttribute('content', isDark ? '#0b0c13' : '#eff0f6');
   }, [isDark]);
 
   const setMode = useCallback((next: ThemeMode) => {

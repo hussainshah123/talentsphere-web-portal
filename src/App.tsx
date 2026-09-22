@@ -4,6 +4,8 @@ import { ProtectedRoute, homeFor } from './components/ProtectedRoute';
 import { useAuth } from './lib/auth';
 
 import Landing from './pages/public/Landing';
+import PublicJobs from './pages/public/PublicJobs';
+import PublicJobDetail from './pages/public/PublicJobDetail';
 import Login from './pages/public/Login';
 import Register from './pages/public/Register';
 import VerifyEmail from './pages/public/VerifyEmail';
@@ -52,6 +54,9 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={user ? <Navigate to={homeFor(user.role)} replace /> : <Landing />} />
+      {/* The job board is readable signed out — applying is what needs an account. */}
+      <Route path="/browse-jobs" element={<PublicJobs />} />
+      <Route path="/browse-jobs/:id" element={<PublicJobDetail />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-email" element={<VerifyEmail />} />

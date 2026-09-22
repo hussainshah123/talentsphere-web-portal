@@ -3,46 +3,60 @@
    --------------------------------------------------------------------------
    Direction: editorial, not "dashboard template". A serif display face
    (Fraunces) carries voice, DM Sans carries the UI, JetBrains Mono carries
-   data. Warm paper surfaces, ink text, one confident brand green with a
-   terracotta signal colour. Depth comes from hairlines and restraint rather
-   than glows and gradients.
+   data. Cool paper surfaces, ink text, indigo as the brand with amber as its
+   warm counterweight; green is kept but means *success* and nothing else.
+   Depth comes from hairlines and restraint. Gradients are used, but they are
+   rationed to four tokens with defined jobs — see --grad-* below — because a
+   gradient on every surface reads the same as none.
    ========================================================================== */
 
 :root {
-  /* --- Raw palette ------------------------------------------------------ */
-  --ink-900: #14181f;
-  --ink-800: #1d2430;
-  --ink-700: #2b3442;
-  --ink-500: #55606f;
-  --ink-400: #78838f;
-  --ink-300: #9aa3ad;
+  /* --- Raw palette ------------------------------------------------------
+     Indigo carries the brand, amber is its warm counterweight. Ink takes a
+     blue undertone so the darkest surfaces — sidebar, toasts, primary buttons
+     — sit in the same family as indigo rather than arguing with it, and paper
+     is cooled to match. Green is kept, but demoted to meaning *success* only,
+     now that it no longer carries the brand. --------------------------------- */
+  --ink-900: #14161f;
+  --ink-800: #1d2130;
+  --ink-700: #2c3242;
+  --ink-500: #4e5468;
+  --ink-400: #757c90;
+  --ink-300: #9aa0b2;
 
-  --paper: #fbfaf7; /* warm off-white — reads as paper, not screen grey */
-  --paper-2: #f4f2ed;
-  --paper-3: #eae7e0;
+  /* Four steps, lightest first. The card and the ground must not be the same
+     colour: white cards on a near-white page read as one flat white sheet, so
+     the ground is pulled down far enough for a card to lift off it. */
+  --paper: #ffffff; /* lightest — card surfaces, and type set on dark panels */
+  --paper-1: #eff0f6; /* the page ground */
+  --paper-2: #f6f7fb; /* a tint inside a card: hover rows, recessed fields */
+  --paper-3: #e4e6ef; /* a stronger recess */
 
-  --forest-900: #0a3c31;
-  --forest-700: #0e5c4a;
-  --forest-500: #17795f;
-  --forest-100: #dff0e9;
+  --indigo-900: #312578;
+  --indigo-700: #4338ca;
+  --indigo-500: #6366f1;
+  --indigo-100: #e8e7fb;
+  --violet-500: #7c5cf0; /* the bridge hue between indigo and amber */
 
-  --clay-600: #b4552f; /* terracotta — used sparingly, for signal */
-  --clay-500: #c8643c;
-  --clay-100: #fbeade;
+  /* Amber is the accent. It doubles as the warning colour, one step darker so
+     it holds its contrast as text on paper. */
+  --amber-600: #b45309;
+  --amber-500: #d97706;
+  --amber-100: #fdf0dc;
 
-  --gold-600: #9a7018;
-  --gold-100: #f8efd8;
+  --emerald-700: #0f7a52;
+  --emerald-100: #dcf2e7;
 
-  --rust-600: #a8382f;
-  --rust-100: #fbe5e2;
+  --rose-600: #c42a3e;
+  --rose-100: #fce4e8;
 
   /* --- Semantic: light -------------------------------------------------- */
-  --bg: var(--paper);
-  --surface: #ffffff;
+  --bg: var(--paper-1);
+  --surface: var(--paper);
   --surface-2: var(--paper-2);
   --surface-3: var(--paper-3);
-  --hairline: rgba(20, 24, 31, 0.09);
-  --hairline-strong: rgba(20, 24, 31, 0.16);
+  --hairline: rgba(20, 22, 31, 0.1);
+  --hairline-strong: rgba(20, 22, 31, 0.18);
   --border: var(--hairline);
   --border-strong: var(--hairline-strong);
 
@@ -50,23 +64,23 @@
   --text-2: var(--ink-500);
   --text-3: var(--ink-400);
 
-  --brand: var(--forest-700);
-  --brand-hover: var(--forest-900);
-  --brand-soft: var(--forest-100);
+  --brand: var(--indigo-700);
+  --brand-hover: var(--indigo-900);
+  --brand-soft: var(--indigo-100);
   --accent: var(--brand); /* legacy alias used across components */
   --accent-soft: var(--brand-soft);
 
-  --signal: var(--clay-500);
-  --signal-soft: var(--clay-100);
+  --signal: var(--amber-500);
+  --signal-soft: var(--amber-100);
 
-  --success: var(--forest-700);
-  --success-soft: var(--forest-100);
-  --warning: var(--gold-600);
-  --warning-soft: var(--gold-100);
-  --danger: var(--rust-600);
-  --danger-soft: var(--rust-100);
-  --info: #2c5282;
-  --info-soft: #e6edf6;
+  --success: var(--emerald-700);
+  --success-soft: var(--emerald-100);
+  --warning: var(--amber-600);
+  --warning-soft: var(--amber-100);
+  --danger: var(--rose-600);
+  --danger-soft: var(--rose-100);
+  --info: var(--indigo-700);
+  --info-soft: var(--indigo-100);
 
   --sidebar-bg: var(--ink-900);
   /* Edge on the floating panel. Light needs none; dark needs one to read as raised. */
@@ -75,15 +89,43 @@
   --sidebar-text-strong: #ffffff;
   --sidebar-hairline: rgba(255, 255, 255, 0.1);
 
-  /* --- Depth ------------------------------------------------------------ */
-  --shadow-xs: 0 1px 1px rgba(20, 24, 31, 0.04);
-  --shadow-sm: 0 1px 2px rgba(20, 24, 31, 0.05), 0 2px 6px -2px rgba(20, 24, 31, 0.05);
-  --shadow-md: 0 2px 4px rgba(20, 24, 31, 0.04), 0 10px 24px -10px rgba(20, 24, 31, 0.14);
-  --shadow-lg: 0 24px 60px -24px rgba(20, 24, 31, 0.3), 0 4px 10px -4px rgba(20, 24, 31, 0.08);
-  --ring: 0 0 0 3px rgba(14, 92, 74, 0.2);
+  /* --- Depth -------------------------------------------------------------
+     Shadows are tinted with the ink rather than neutral black, so a raised
+     surface looks lit by the same room as everything under it. ------------ */
+  --shadow-xs: 0 1px 2px rgba(20, 22, 31, 0.04);
+  --shadow-sm: 0 1px 2px rgba(20, 22, 31, 0.05), 0 2px 8px -3px rgba(20, 22, 31, 0.07);
+  --shadow-md: 0 2px 5px rgba(20, 22, 31, 0.05), 0 14px 30px -12px rgba(20, 22, 31, 0.15);
+  --shadow-lg: 0 30px 70px -28px rgba(20, 22, 31, 0.32), 0 6px 14px -6px rgba(20, 22, 31, 0.1);
+  --ring: 0 0 0 3px rgba(67, 56, 202, 0.22);
+
+  /* A one-pixel highlight along the top of a raised surface. Catches the light
+     in both themes — bright in light, barely there in dark. */
+  --elevate: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+
+  /* --- Gradients ----------------------------------------------------------
+     Three, and they each have a job. `primary` fills the thing you click;
+     `brand` runs indigo all the way to amber and is for accents and display
+     type; `wash` is the almost-invisible field behind a hero. Everything else
+     stays flat — a gradient on every surface is the same as none. */
+  --grad-primary: linear-gradient(135deg, var(--indigo-700), #5546dd 55%, var(--indigo-500));
+  --grad-primary-hover: linear-gradient(135deg, var(--indigo-900), var(--indigo-700) 58%, #5546dd);
+  /* Text stays in the cool half: across a single word, indigo-to-amber passes
+     through a grey-brown that reads as a printing fault. */
+  --grad-text: linear-gradient(100deg, var(--indigo-700), var(--violet-500));
+  --grad-brand: linear-gradient(135deg, var(--indigo-700), var(--indigo-500) 52%, var(--amber-500));
+  --grad-wash: radial-gradient(
+      120% 100% at 8% -20%,
+      color-mix(in srgb, var(--indigo-500) 15%, transparent),
+      transparent 58%
+    ),
+    radial-gradient(
+      90% 80% at 100% 0%,
+      color-mix(in srgb, var(--violet-500) 11%, transparent),
+      transparent 55%
+    );
 
   /* Faint dot grid — texture instead of a gradient wash. */
-  --grid-dot: rgba(20, 24, 31, 0.055);
+  --grid-dot: rgba(20, 22, 31, 0.055);
 
   /* --- Geometry --------------------------------------------------------- */
   --r-xs: 6px;
@@ -114,51 +156,75 @@
   color: var(--text);
 }
 
+/*
+ * Dark is not the light theme inverted. It is the same room at night: the greys
+ * keep the green undertone the ink has, surfaces step up in even increments so
+ * elevation is readable without borders doing all the work, and the brand comes
+ * up in brightness because a dark field eats saturation.
+ */
 [data-theme='dark'] {
-  --bg: #0f1216;
-  --surface: #161b22;
-  --surface-2: #1c222b;
-  --surface-3: #242c37;
-  --hairline: rgba(255, 255, 255, 0.1);
-  --hairline-strong: rgba(255, 255, 255, 0.18);
+  --bg: #0b0c13;
+  --surface: #14161f;
+  --surface-2: #1b1e2a;
+  --surface-3: #242837;
+  --hairline: rgba(226, 228, 242, 0.09);
+  --hairline-strong: rgba(226, 228, 242, 0.17);
   --border: var(--hairline);
   --border-strong: var(--hairline-strong);
 
-  --text: #edeae4;
-  --text-2: #a7aeb8;
-  --text-3: #7f8892;
+  --text: #e9eaf2;
+  --text-2: #a2a7bb;
+  --text-3: #787e94;
 
-  --brand: #4bab8d;
-  --brand-hover: #63c0a3;
-  --brand-soft: #14302a;
+  /* Indigo has to come up a long way on a dark field: #4338ca is nearly
+     invisible against #0b0c13, so dark gets the periwinkle end of the ramp. */
+  --brand: #8b87f5;
+  --brand-hover: #a7a3ff;
+  --brand-soft: #1e1b45;
   --accent: var(--brand);
   --accent-soft: var(--brand-soft);
 
-  --signal: #e08a60;
-  --signal-soft: #35211a;
+  --signal: #f0a84a;
+  --signal-soft: #37280f;
 
-  --success: #4bab8d;
-  --success-soft: #14302a;
-  --warning: #d6a343;
-  --warning-soft: #322713;
-  --danger: #e0756a;
-  --danger-soft: #35201e;
-  --info: #7ba6dd;
-  --info-soft: #182634;
+  --success: #3fbf87;
+  --success-soft: #0e2b20;
+  --warning: #e0a94e;
+  --warning-soft: #322611;
+  --danger: #ef7182;
+  --danger-soft: #371d25;
+  --info: #8b87f5;
+  --info-soft: #1e1b45;
 
-  --sidebar-bg: #151a21;
-  --sidebar-edge: rgba(255, 255, 255, 0.08);
-  --sidebar-text: rgba(255, 255, 255, 0.66);
+  --sidebar-bg: #10121b;
+  --sidebar-edge: rgba(226, 228, 242, 0.07);
+  --sidebar-text: rgba(233, 234, 242, 0.66);
   --sidebar-text-strong: #ffffff;
-  --sidebar-hairline: rgba(255, 255, 255, 0.08);
+  --sidebar-hairline: rgba(226, 228, 242, 0.08);
 
-  --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.4);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px -2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 28px -12px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 28px 64px -28px rgba(0, 0, 0, 0.8);
-  --ring: 0 0 0 3px rgba(75, 171, 141, 0.28);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.44);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45), 0 2px 8px -3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 2px 5px rgba(0, 0, 0, 0.45), 0 14px 32px -12px rgba(0, 0, 0, 0.66);
+  --shadow-lg: 0 30px 70px -28px rgba(0, 0, 0, 0.82), 0 6px 16px -6px rgba(0, 0, 0, 0.5);
+  --ring: 0 0 0 3px rgba(139, 135, 245, 0.32);
 
-  --grid-dot: rgba(255, 255, 255, 0.05);
+  --elevate: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  --grad-primary: linear-gradient(135deg, #7d78f0, var(--brand) 55%, #a09bff);
+  --grad-primary-hover: linear-gradient(135deg, var(--brand), #a09bff 58%, #b6b2ff);
+  --grad-text: linear-gradient(100deg, #9b97ff, #c0a8ff);
+  --grad-brand: linear-gradient(135deg, var(--brand), #7c78ea 52%, var(--signal));
+  --grad-wash: radial-gradient(
+      120% 100% at 8% -20%,
+      color-mix(in srgb, var(--brand) 14%, transparent),
+      transparent 58%
+    ),
+    radial-gradient(
+      90% 80% at 100% 0%,
+      color-mix(in srgb, #9b7cff 9%, transparent),
+      transparent 55%
+    );
+
+  --grid-dot: rgba(226, 228, 242, 0.055);
 
   color-scheme: dark;
 }
@@ -178,7 +244,15 @@ body {
   font-size: 15px;
   line-height: 1.6;
   font-family: var(--font-ui);
-  background: var(--bg);
+  /* One very wide, very faint brand wash off the top-left, so a full-bleed page
+     is lit rather than flat. Fixed, so it does not travel with the scroll. */
+  background-color: var(--bg);
+  background-image: radial-gradient(
+    120% 90% at 8% -10%,
+    color-mix(in srgb, var(--brand) 4%, transparent),
+    transparent 62%
+  );
+  background-attachment: fixed;
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -354,16 +428,6 @@ code {
   }
 }
 
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.35;
-  }
-}
-
 .animate-in {
   animation: rise 0.45s var(--ease-out) both;
 }
@@ -433,6 +497,13 @@ code {
   overflow: hidden;
   z-index: 50;
   transition: width 0.26s var(--ease), transform 0.3s var(--ease);
+  /* A single brand wash behind the brand mark, so the panel has a light source
+     instead of reading as a black rectangle taped to the page. */
+  background-image: radial-gradient(
+    120% 42% at 0% 0%,
+    color-mix(in srgb, var(--brand) 16%, transparent),
+    transparent 70%
+  );
 }
 
 .nav-scroll {
@@ -468,15 +539,17 @@ code {
 }
 
 .brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 30px;
   height: 30px;
-  border-radius: 9px;
-  background: var(--brand);
-  color: #fff;
-  display: grid;
-  place-items: center;
   flex-shrink: 0;
-  transition: transform 0.26s var(--ease);
+  border-radius: 9px;
+  background: var(--grad-brand);
+  color: #fff;
+  box-shadow: 0 2px 10px -3px color-mix(in srgb, var(--brand) 70%, transparent);
+  transition: transform 0.26s var(--ease), box-shadow 0.26s var(--ease);
 }
 
 .sidebar:hover .brand-mark {
@@ -621,28 +694,6 @@ code {
   padding: 0 5px;
 }
 
-.sidebar-collapse {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  margin-top: 10px;
-  padding: 8px 11px;
-  background: transparent;
-  border: 1px solid var(--sidebar-hairline);
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 12.5px;
-  font-weight: 500;
-  justify-content: flex-start;
-  border-radius: var(--r-sm);
-}
-
-.sidebar-collapse:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-  box-shadow: none;
-}
-
 .sidebar-footer {
   padding: 14px 12px 0;
   margin-top: 12px;
@@ -655,23 +706,30 @@ code {
   white-space: nowrap;
 }
 
-/* ---- Rail mode (desktop collapse) --------------------------------------
+/* ---- Rail mode (desktop) ------------------------------------------------
+ *
+ * On a wide screen with a pointer the sidebar is always a 68px rail that widens
+ * on hover. There is no toggle: a control whose only job is to undo the default
+ * is a control you have to explain.
  *
  * Railed, the sidebar leaves the flow and the shell holds its place open with
  * padding. Widening it on hover then floats the panel over the page instead of
  * pushing it, so the dashboard never reflows under the pointer.
  *
- * The collapsed look is scoped to the rail at rest, so hovering restores every
- * label through one condition rather than a second set of undo rules.
+ * Gated on `hover: hover`: a wide touch screen has no pointer to widen it with
+ * and no hamburger either (that is phone-width only), so there the sidebar just
+ * stays full width. The collapsed look is scoped to the rail *at rest*, so
+ * hovering restores every label through one condition rather than a second set
+ * of undo rules.
  */
-@media (min-width: 861px) {
-  .app-shell.rail {
+@media (min-width: 861px) and (hover: hover) {
+  .app-shell {
     --sidebar-w: 68px;
     /* The rail plus the air on both sides of it. */
     padding-left: calc(var(--sidebar-w) + var(--sidebar-inset) * 2);
   }
 
-  .app-shell.rail .sidebar {
+  .app-shell .sidebar {
     position: fixed;
     left: var(--sidebar-inset);
     top: var(--sidebar-inset);
@@ -680,49 +738,45 @@ code {
   }
 
   /*
-   * Only where a pointer can hover — a touch device keeps the collapse toggle.
-   * Keyboard focus expands it too, through a class React sets on real keyboard focus.
-   * A CSS-only `:focus-within` would re-expand the rail the instant you clicked
-   * collapse, since that button lives inside the sidebar. `:has(:focus-visible)`
-   * fixed that but silently dropped every rule below it on a browser without
+   * Keyboard focus widens it as well, through a class React sets on real
+   * keyboard focus. A CSS-only `:focus-within` also fires on a mouse click, so
+   * the rail would stay open after every navigation; `:has(:focus-visible)`
+   * avoids that but silently drops every rule below it on a browser without
    * `:has()`, leaving full-size labels crammed into a 68px column.
    */
-  @media (hover: hover) {
-    .app-shell.rail .sidebar:hover,
-    .app-shell.rail .sidebar.kb-focus {
-      width: var(--sidebar-expanded);
-      box-shadow: var(--shadow-lg);
-    }
+  .app-shell .sidebar:hover,
+  .app-shell .sidebar.kb-focus {
+    width: var(--sidebar-expanded);
+    box-shadow: var(--shadow-lg);
   }
 
-  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .brand-text,
-  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .nav-label,
-  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .sidebar-footer {
+  .app-shell .sidebar:not(:hover):not(.kb-focus) .brand-text,
+  .app-shell .sidebar:not(:hover):not(.kb-focus) .nav-label,
+  .app-shell .sidebar:not(:hover):not(.kb-focus) .sidebar-footer {
     opacity: 0;
     width: 0;
     overflow: hidden;
     pointer-events: none;
   }
 
-  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .nav-group-label {
+  .app-shell .sidebar:not(:hover):not(.kb-focus) .nav-group-label {
     opacity: 0;
     height: 10px;
     padding: 6px 0 0;
   }
 
-  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .nav-link,
-  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .sidebar-collapse {
+  .app-shell .sidebar:not(:hover):not(.kb-focus) .nav-link {
     justify-content: center;
     padding-left: 11px;
     padding-right: 11px;
     gap: 0;
   }
 
-  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .nav-link:hover {
+  .app-shell .sidebar:not(:hover):not(.kb-focus) .nav-link:hover {
     padding-left: 11px;
   }
 
-  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .nav-count {
+  .app-shell .sidebar:not(:hover):not(.kb-focus) .nav-count {
     position: absolute;
     top: 3px;
     right: 6px;
@@ -732,17 +786,17 @@ code {
     margin: 0;
   }
 
-  .app-shell.rail .sidebar:not(:hover):not(.kb-focus) .brand {
+  .app-shell .sidebar:not(:hover):not(.kb-focus) .brand {
     justify-content: center;
     padding-left: 0;
     padding-right: 0;
   }
 
   /* Labels fade back in rather than snapping, in step with the width. */
-  .app-shell.rail .brand-text,
-  .app-shell.rail .nav-label,
-  .app-shell.rail .sidebar-footer,
-  .app-shell.rail .nav-group-label {
+  .app-shell .brand-text,
+  .app-shell .nav-label,
+  .app-shell .sidebar-footer,
+  .app-shell .nav-group-label {
     transition:
       opacity 0.2s var(--ease) 0.04s,
       width 0.26s var(--ease),
@@ -801,13 +855,9 @@ code {
     display: inline-flex;
   }
 
-  .sidebar-collapse {
-    display: none;
-  }
-
   /* The rail block is desktop-only, so there is nothing to undo here — but the
      shell must not keep padding open for a sidebar that is now a drawer. */
-  .app-shell.rail {
+  .app-shell {
     --sidebar-w: 256px;
     padding-left: 0;
   }
@@ -874,7 +924,19 @@ code {
   padding: 30px 26px 64px;
   max-width: 1200px;
   width: 100%;
-  animation: fade 0.3s var(--ease) both;
+  animation: page-in 0.34s var(--ease-out) both;
+}
+
+/* Small travel, not a slide: enough to say "this is new", not enough to wait for. */
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .page-header {
@@ -903,8 +965,13 @@ code {
   border: 1px solid var(--hairline);
   border-radius: var(--r-lg);
   padding: 20px 22px;
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-xs), var(--elevate);
   transition: box-shadow 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+/* A card that is not a link still acknowledges the pointer, quietly. */
+.card:hover {
+  border-color: color-mix(in srgb, var(--hairline-strong) 70%, transparent);
 }
 
 .card + .card {
@@ -917,8 +984,13 @@ code {
 
 .card.interactive:hover {
   border-color: var(--hairline-strong);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  box-shadow: var(--shadow-md), var(--elevate);
+  transform: translateY(-2px);
+}
+
+.card.interactive:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm), var(--elevate);
 }
 
 .card.flush {
@@ -1029,14 +1101,42 @@ code {
   border: 1px solid var(--hairline);
   border-radius: var(--r-lg);
   padding: 16px 18px 18px;
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-xs), var(--elevate);
   position: relative;
-  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  overflow: hidden;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease),
+    transform 0.2s var(--ease-out);
+}
+
+/* A hairline of brand slides across the top on hover — the only movement a
+   number needs, since the number itself must stay still to be read. */
+.stat::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--grad-brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.36s var(--ease-out);
 }
 
 .stat:hover {
   border-color: var(--hairline-strong);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm), var(--elevate);
+  transform: translateY(-2px);
+}
+
+.stat:hover::after {
+  transform: scaleX(1);
+}
+
+.stat:hover .stat-icon {
+  color: var(--brand);
+}
+
+.stat .stat-icon {
+  transition: color 0.2s var(--ease);
 }
 
 .stat .stat-icon {
@@ -1082,7 +1182,12 @@ button,
   border: 1px solid transparent;
   padding: 9px 15px;
   cursor: pointer;
-  background: var(--ink-900);
+  /* The primary action carries the brand. Ink is for chrome — the sidebar, the
+     CTA band, a toast — not for the thing you are meant to click. The colour is
+     set as well as the image, so a variant that overrides `background` with a
+     flat colour still lands somewhere sensible. */
+  background-color: var(--brand);
+  background-image: var(--grad-primary);
   color: #fff;
   display: inline-flex;
   align-items: center;
@@ -1091,34 +1196,41 @@ button,
   text-decoration: none;
   white-space: nowrap;
   transition: background 0.14s var(--ease), border-color 0.14s var(--ease), color 0.14s var(--ease),
-    box-shadow 0.14s var(--ease);
+    box-shadow 0.14s var(--ease), transform 0.14s var(--ease-out);
 }
 
 /* Dark mode flips the primary fill to brand — but only for primary buttons;
    secondary/ghost/danger keep their own treatment. */
-[data-theme='dark'] button:not(.secondary):not(.ghost):not(.danger):not(.btn-secondary):not(.btn-ghost):not(.btn-danger):not(.theme-toggle):not(.icon-btn):not(.step),
+[data-theme='dark'] button:not(.secondary):not(.ghost):not(.danger):not(.btn-secondary):not(.btn-ghost):not(.btn-danger):not(.theme-toggle):not(.icon-btn):not(.step):not(.filter-chip):not(.sidebar-close),
 [data-theme='dark'] .btn:not(.btn-secondary):not(.btn-ghost):not(.btn-danger):not(.secondary):not(.ghost):not(.danger) {
-  background: var(--brand);
-  color: #04120e;
+  background-color: var(--brand);
+  background-image: var(--grad-primary);
+  color: #12102e;
 }
 
-[data-theme='dark'] button:not(.secondary):not(.ghost):not(.danger):not(.btn-secondary):not(.btn-ghost):not(.btn-danger):not(.theme-toggle):not(.icon-btn):not(.step):hover:not(:disabled),
+[data-theme='dark'] button:not(.secondary):not(.ghost):not(.danger):not(.btn-secondary):not(.btn-ghost):not(.btn-danger):not(.theme-toggle):not(.icon-btn):not(.step):not(.filter-chip):not(.sidebar-close):hover:not(:disabled),
 [data-theme='dark'] .btn:not(.btn-secondary):not(.btn-ghost):not(.btn-danger):hover {
-  background: var(--brand-hover);
-  color: #04120e;
+  background-color: var(--brand-hover);
+  background-image: var(--grad-primary-hover);
+  color: #12102e;
 }
 
 button:hover:not(:disabled),
 .btn:hover {
-  background: var(--brand-hover);
+  background-color: var(--brand-hover);
+  background-image: var(--grad-primary-hover);
   color: #fff;
   text-decoration: none;
   box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
 }
 
+/* A button that does not move on press feels like a picture of a button. */
 button:active:not(:disabled),
 .btn:active {
   box-shadow: none;
+  transform: translateY(0) scale(0.985);
+  transition-duration: 0.06s;
 }
 
 button:focus-visible,
@@ -1180,6 +1292,7 @@ button.ghost:hover:not(:disabled) {
   background: var(--surface-2);
   color: var(--text);
   box-shadow: none;
+  transform: none;
 }
 
 .btn-sm {
@@ -1207,7 +1320,20 @@ textarea {
   border-radius: var(--r-sm);
   background: var(--surface);
   color: var(--text);
-  transition: border-color 0.14s var(--ease), box-shadow 0.14s var(--ease);
+  transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease),
+    background 0.18s var(--ease);
+}
+
+input:hover:not(:disabled),
+select:hover:not(:disabled),
+textarea:hover:not(:disabled) {
+  border-color: var(--text-3);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--brand);
 }
 
 input::placeholder,
@@ -1307,6 +1433,20 @@ fieldset {
   color: var(--text-2);
   border: 1px solid var(--hairline);
   white-space: nowrap;
+  animation: badge-in 0.26s var(--ease-out) both;
+}
+
+/* A status badge often replaces another one. The small scale makes the swap
+   legible without redrawing attention to every badge on the page. */
+@keyframes badge-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .badge.success {
@@ -1351,12 +1491,14 @@ fieldset {
   border: 1px solid var(--hairline-strong);
   font-size: 12.5px;
   color: var(--text-2);
-  transition: border-color 0.14s var(--ease), color 0.14s var(--ease);
+  transition: border-color 0.14s var(--ease), color 0.14s var(--ease),
+    transform 0.14s var(--ease-out);
 }
 
 .chip:hover {
   border-color: var(--text-3);
   color: var(--text);
+  transform: translateY(-1px);
 }
 
 .chip button {
@@ -1431,11 +1573,13 @@ td {
 }
 
 tbody tr {
-  transition: background 0.12s var(--ease);
+  transition: background 0.14s var(--ease), box-shadow 0.14s var(--ease);
 }
 
 tbody tr:hover {
   background: var(--surface-2);
+  /* An inset rule rather than a border, so the row height never shifts. */
+  box-shadow: inset 2px 0 0 var(--brand);
 }
 
 tr:last-child td {
@@ -1525,16 +1669,19 @@ hr,
 .progress > div {
   height: 100%;
   border-radius: var(--r-pill);
-  background: var(--brand);
+  background-color: var(--brand);
+  background-image: var(--grad-primary);
   transition: width 0.7s var(--ease-out);
 }
 
 .progress.warning > div {
   background: var(--warning);
+  background-image: none;
 }
 
 .progress.danger > div {
   background: var(--danger);
+  background-image: none;
 }
 
 .score-ring {
@@ -1563,6 +1710,12 @@ hr,
   stroke-dasharray: var(--ring-circumference);
   animation: draw-ring 1s var(--ease-out) both;
   transition: stroke-dashoffset 0.8s var(--ease-out);
+}
+
+/* The arc is painted with an SVG gradient, defined per instance in ScoreRing —
+   CSS gradients cannot be used as an SVG stroke. */
+.score-ring .value-arc {
+  stroke-linecap: round;
 }
 
 .score-ring .score-content {
@@ -1887,6 +2040,19 @@ hr,
 .landing-nav .brand {
   padding: 0;
   color: var(--text);
+  text-decoration: none;
+}
+
+.landing-nav .brand:hover {
+  text-decoration: none;
+}
+
+.landing-nav .brand:hover .brand-mark {
+  transform: rotate(-6deg) scale(1.06);
+}
+
+.landing-nav .brand-mark {
+  transition: transform 0.26s var(--ease-out);
 }
 
 .landing-nav .brand small {
@@ -1897,8 +2063,9 @@ hr,
   position: relative;
   padding: 84px 34px 72px;
   border-bottom: 1px solid var(--hairline);
-  background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
-  background-size: 26px 26px;
+  /* Dot grid over the brand wash: the grid tiles, the wash does not. */
+  background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px), var(--grad-wash);
+  background-size: 26px 26px, cover;
 }
 
 .landing-hero::after {
@@ -1921,12 +2088,12 @@ hr,
   align-items: center;
 }
 
+/* The headline animates per word (.hero-headline), so the block itself does not. */
 .hero-copy h1 {
   font-size: clamp(38px, 4.6vw, 62px);
   line-height: 1.02;
   letter-spacing: -0.028em;
   margin-bottom: 20px;
-  animation: rise 0.55s var(--ease-out) 0.04s both;
 }
 
 .hero-copy h1 em {
@@ -2160,10 +2327,13 @@ hr,
   border: 1px solid var(--hairline-strong);
   border-radius: var(--r-xl);
   padding: 52px 44px;
-  background: var(--ink-900);
   color: rgba(255, 255, 255, 0.76);
-  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  background-size: 24px 24px;
+  /* Dot grid over an ink-to-indigo bed. Two layers, so the grid keeps its own
+     tile size while the gradient covers the whole band. */
+  background-color: var(--ink-900);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(135deg, var(--ink-900), var(--indigo-900) 68%, #4b3dae);
+  background-size: 24px 24px, cover;
 }
 
 .landing-cta h2 {
@@ -2181,7 +2351,7 @@ hr,
  * page, so the band borrows the brand instead of the ink.
  */
 [data-theme='dark'] .landing-cta {
-  background: linear-gradient(150deg, var(--forest-900), #10201b 62%);
+  background: linear-gradient(150deg, var(--indigo-900), #16162b 62%);
   border-color: color-mix(in srgb, var(--brand) 34%, transparent);
   box-shadow: 0 30px 70px -50px color-mix(in srgb, var(--brand) 60%, transparent);
 }
@@ -2251,7 +2421,7 @@ hr,
 [data-theme='dark'] .step.active {
   border-color: var(--brand);
   background: var(--brand);
-  color: #04120e;
+  color: #12102e;
 }
 
 .step.done {
@@ -2261,16 +2431,17 @@ hr,
 
 /* ----------------------------------------------------------------- modal */
 
+/* Above the sidebar (50) and the scroll progress (55), below toasts (100). */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(20, 24, 31, 0.5);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: rgba(8, 14, 12, 0.58);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: grid;
   place-items: center;
   padding: 20px;
-  z-index: 60;
+  z-index: 80;
   animation: fade 0.18s var(--ease) both;
 }
 
@@ -2306,8 +2477,19 @@ hr,
   display: flex;
   align-items: center;
   gap: 9px;
-  animation: pop 0.26s var(--ease-out) both;
+  animation: toast-in 0.34s var(--ease-out) both;
   border-left: 2px solid var(--brand);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate3d(18px, 6px, 0) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .toast.error {
@@ -2320,8 +2502,18 @@ hr,
 
 /* ---------------------------------------------------------- icon buttons */
 
+/*
+ * These centre their own contents. The flex centring used to come from the bare
+ * `button` selector, so the one icon control that is a link — the notification
+ * NavLink — laid its glyph out on a text baseline instead: 1px of space above
+ * it and 16px below, which read as the icon sitting high. A class that styles a
+ * box has to work on whatever element carries it.
+ */
 .theme-toggle,
 .icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 34px;
   height: 34px;
   padding: 0;
@@ -2338,17 +2530,42 @@ hr,
   background: var(--surface-2);
   color: var(--text);
   box-shadow: none;
+  border-color: var(--text-3);
+  transform: none;
 }
 
+.theme-toggle svg,
+.icon-btn svg {
+  transition: transform 0.4s var(--ease-out);
+}
+
+/* The sun/moon swap is a real change of state, so it turns rather than blinks. */
+.theme-toggle:hover:not(:disabled) svg {
+  transform: rotate(-32deg);
+}
+
+.icon-btn:hover:not(:disabled) svg {
+  transform: scale(1.08);
+}
+
+/*
+ * An unread marker, drawn as a badge clearing the button's corner rather than a
+ * dot sitting on top of the glyph — inside the border it collided with the bell
+ * and read as part of it. The ring is the page behind, so the badge stays
+ * legible whatever it overlaps. It does not blink: a marker that spends half its
+ * life at 35% opacity looks like a rendering fault, and it means the same thing
+ * the whole time it is there.
+ */
 .icon-btn .dot {
   position: absolute;
-  top: 6px;
-  right: 7px;
-  width: 6px;
-  height: 6px;
+  top: -3px;
+  right: -3px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--signal);
-  animation: blink 2.4s ease-in-out infinite;
+  border: 2px solid var(--bg);
+  box-sizing: border-box;
 }
 
 /* ------------------------------------------------------------ check list */
@@ -3007,4 +3224,930 @@ hr,
 
 .list-row:first-of-type {
   border-top: none;
+}
+
+/* ==========================================================================
+   Public surfaces — the signed-out job board, one job, and the motion that
+   carries the marketing pages. Everything here is decoration over a layout
+   that already works: the global reduced-motion rule flattens all of it.
+   ========================================================================== */
+
+/* ------------------------------------------------------- motion primitives */
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, -4%, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes word-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.5em, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 55%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@keyframes sheen {
+  to {
+    transform: translateX(240%) skewX(-18deg);
+  }
+}
+
+/* A hairline that fills across the very top as the page scrolls. */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 55;
+  pointer-events: none;
+}
+
+.scroll-progress i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand), var(--signal));
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+/* One slow highlight across a primary button on hover. Not a loop. */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  bottom: -50%;
+  left: -60%;
+  width: 34%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.28), transparent);
+  transform: translateX(-160%) skewX(-18deg);
+  pointer-events: none;
+}
+
+.btn-shine:hover::after {
+  animation: sheen 0.72s var(--ease-out) both;
+}
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  display: inline-block;
+  flex-shrink: 0;
+  animation: pulse-ring 2.4s var(--ease-out) infinite;
+}
+
+/* ------------------------------------------------------------- landing hero */
+
+/* Two very faint washes, drifting slower than anyone consciously tracks. */
+.hero-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-aurora i {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.5;
+}
+
+.hero-aurora i:first-child {
+  width: 40vw;
+  height: 40vw;
+  top: -14vw;
+  left: -8vw;
+  background: color-mix(in srgb, var(--brand) 22%, transparent);
+  animation: drift 26s ease-in-out infinite;
+}
+
+.hero-aurora i:last-child {
+  width: 32vw;
+  height: 32vw;
+  right: -6vw;
+  top: 18vw;
+  background: color-mix(in srgb, var(--signal) 16%, transparent);
+  animation: drift 34s ease-in-out infinite reverse;
+}
+
+[data-theme='dark'] .hero-aurora i {
+  opacity: 0.34;
+}
+
+.hero-headline {
+  font-size: clamp(38px, 4.6vw, 62px);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  margin-bottom: 20px;
+}
+
+.hero-headline span {
+  display: inline-block;
+  animation: word-in 0.62s var(--ease-out) both;
+}
+
+.hero-headline span + span {
+  margin-left: 0.24em;
+}
+
+/*
+ * The emphasised word is set in the brand gradient. `color` stays declared so a
+ * browser without background-clip:text still gets a readable indigo word rather
+ * than a transparent hole.
+ */
+.hero-headline em,
+.board-hero h1 em,
+.hero-copy h1 em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--brand);
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .hero-headline em,
+  .board-hero h1 em,
+  .hero-copy h1 em {
+    background: var(--grad-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* An italic serif overhangs its box; without this the tail is clipped. */
+    padding-right: 0.06em;
+  }
+}
+
+.hero-browse {
+  margin-top: 16px;
+  font-size: 13.5px;
+}
+
+.hero-browse a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-2);
+  text-decoration: none;
+  border-bottom: 1px solid var(--hairline-strong);
+  padding-bottom: 2px;
+  transition: color 0.16s var(--ease), border-color 0.16s var(--ease), gap 0.16s var(--ease);
+}
+
+.hero-browse a:hover {
+  color: var(--brand);
+  border-color: var(--brand);
+  gap: 10px;
+}
+
+.landing-links a.here {
+  color: var(--text);
+}
+
+.landing-links a.here::after {
+  transform: scaleX(1);
+}
+
+/* ------------------------------------------------- landing: live job strip */
+
+.live-jobs {
+  display: grid;
+  border-top: 1px solid var(--hairline);
+}
+
+.live-job {
+  display: grid;
+  grid-template-columns: 1fr auto 26px;
+  align-items: center;
+  gap: 18px;
+  padding: 17px 8px 17px 0;
+  border-bottom: 1px solid var(--hairline);
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  animation: rise 0.5s var(--ease-out) both;
+  transition: padding-left 0.22s var(--ease), background 0.22s var(--ease);
+}
+
+.live-job::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--brand);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.26s var(--ease-out);
+}
+
+a.live-job:hover {
+  padding-left: 14px;
+  background: var(--surface-2);
+  text-decoration: none;
+}
+
+a.live-job:hover::before {
+  transform: scaleY(1);
+}
+
+.live-job.empty {
+  grid-template-columns: 1fr auto;
+}
+
+.live-job-title {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.live-job-title strong {
+  font-size: 15.5px;
+  font-weight: 600;
+}
+
+.live-job-title em,
+.live-job-meta em {
+  font-style: normal;
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+
+.live-job-meta {
+  display: grid;
+  gap: 3px;
+  text-align: right;
+  font-size: 13px;
+}
+
+.live-job-go {
+  color: var(--text-3);
+  display: inline-flex;
+  justify-content: flex-end;
+  transition: transform 0.22s var(--ease-out), color 0.22s var(--ease);
+}
+
+a.live-job:hover .live-job-go {
+  transform: translateX(4px);
+  color: var(--brand);
+}
+
+@media (max-width: 720px) {
+  .live-job {
+    grid-template-columns: 1fr auto;
+  }
+  .live-job-go {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------ public board: hero */
+
+.board-hero {
+  position: relative;
+  padding: 56px 34px 44px;
+  border-bottom: 1px solid var(--hairline);
+  background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px), var(--grad-wash);
+  background-size: 26px 26px, cover;
+}
+
+.board-hero-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  animation: rise 0.5s var(--ease-out) both;
+}
+
+.board-hero h1 {
+  font-size: clamp(30px, 3.8vw, 46px);
+  line-height: 1.05;
+  letter-spacing: -0.028em;
+  margin-bottom: 14px;
+}
+
+.board-hero .lede {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-2);
+  max-width: 62ch;
+}
+
+.board-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 26px;
+  padding: 8px 8px 8px 14px;
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-pill);
+  box-shadow: var(--shadow-sm);
+  max-width: 760px;
+  transition: box-shadow 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+.board-search:focus-within {
+  border-color: var(--brand);
+  box-shadow: var(--shadow-md);
+}
+
+.board-search > svg {
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.board-search input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  background: none;
+  padding: 7px 0;
+  box-shadow: none;
+}
+
+.board-search input:focus,
+.board-search input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.board-search-where {
+  flex: 0 1 150px !important;
+  border-left: 1px solid var(--hairline) !important;
+  padding-left: 12px !important;
+}
+
+.board-search .btn {
+  border-radius: var(--r-pill);
+  flex-shrink: 0;
+}
+
+.board-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  align-items: center;
+  margin-top: 18px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.board-count,
+.board-guest {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.board-guest {
+  color: var(--text-3);
+  font-size: 12.5px;
+}
+
+/* ---------------------------------------------------- public board: layout */
+
+.board-layout {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 34px;
+  display: grid;
+  grid-template-columns: 268px 1fr;
+  gap: 34px;
+  align-items: start;
+}
+
+.board-filters-inner {
+  position: sticky;
+  top: 88px;
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  animation: rise 0.5s var(--ease-out) 0.06s both;
+}
+
+.filter-group {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.filter-group .hint {
+  margin: 0;
+}
+
+.filter-chip {
+  padding: 5px 11px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--hairline-strong);
+  background: transparent;
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 500;
+  box-shadow: none;
+  transition: background 0.16s var(--ease), color 0.16s var(--ease),
+    border-color 0.16s var(--ease), transform 0.16s var(--ease-out);
+}
+
+.filter-chip:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: var(--text-3);
+  box-shadow: none;
+  transform: translateY(-1px);
+}
+
+.filter-chip.on,
+.filter-chip.on:hover:not(:disabled) {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+[data-theme='dark'] .filter-chip.on,
+[data-theme='dark'] .filter-chip.on:hover:not(:disabled) {
+  color: #12102e;
+}
+
+.filter-cta {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  padding: 14px;
+  border-radius: var(--r-md);
+  background: var(--brand-soft);
+  border: 1px solid color-mix(in srgb, var(--brand) 22%, transparent);
+  font-size: 13px;
+  color: var(--text);
+}
+
+.filter-cta > svg {
+  color: var(--brand);
+}
+
+.board-results {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.board-results-head {
+  min-height: 20px;
+}
+
+/* ------------------------------------------------------ public board: card */
+
+/*
+ * Results animate themselves in rather than waiting on an IntersectionObserver.
+ * A marketing section can afford to be invisible until it is scrolled to; a list
+ * of search results cannot.
+ */
+.job-card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+  animation: rise 0.5s var(--ease-out) both;
+  transition: box-shadow 0.24s var(--ease), border-color 0.24s var(--ease),
+    transform 0.24s var(--ease-out);
+}
+
+.job-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(var(--brand), var(--signal));
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.3s var(--ease-out);
+}
+
+.job-card:hover {
+  border-color: var(--hairline-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.job-card:hover::before {
+  transform: scaleY(1);
+}
+
+.job-card-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: start;
+}
+
+.job-card-title {
+  min-width: 0;
+}
+
+.job-card-title h3 {
+  font-size: 17.5px;
+  margin: 0 0 3px;
+  letter-spacing: -0.012em;
+}
+
+.job-card-title h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The whole card is the hit area; only the title carries the link semantics. */
+.job-card-title h3 a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.job-card-title h3 a:hover {
+  color: var(--brand);
+}
+
+.job-card-pay {
+  text-align: right;
+  font-size: 13.5px;
+  white-space: nowrap;
+}
+
+.job-card-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--hairline);
+  position: relative;
+  z-index: 1;
+}
+
+.job-logo {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 19px;
+  color: var(--text-2);
+  overflow: hidden;
+}
+
+.job-logo.lg {
+  width: 58px;
+  height: 58px;
+  font-size: 25px;
+}
+
+.job-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chip-quiet {
+  border-style: dashed;
+  color: var(--text-3);
+  font-size: 11.5px;
+}
+
+.lock-btn svg {
+  opacity: 0.8;
+}
+
+@media (max-width: 900px) {
+  .board-layout {
+    grid-template-columns: 1fr;
+    padding: 24px 18px;
+  }
+  .board-filters-inner {
+    position: static;
+  }
+  .board-hero {
+    padding: 40px 18px 32px;
+  }
+  .board-search {
+    flex-wrap: wrap;
+    border-radius: var(--r-lg);
+    padding: 12px;
+  }
+  .board-search-where {
+    border-left: none !important;
+    padding-left: 0 !important;
+    flex: 1 1 100% !important;
+  }
+  .board-search .btn {
+    flex: 1 1 100%;
+  }
+  .job-card-head {
+    grid-template-columns: auto 1fr;
+  }
+  .job-card-pay {
+    grid-column: 2;
+    text-align: left;
+  }
+}
+
+/* ----------------------------------------------------------- one job: page */
+
+.job-hero {
+  position: relative;
+  padding: 36px 34px 30px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--surface-2);
+}
+
+.job-hero-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  animation: rise 0.45s var(--ease-out) both;
+}
+
+.job-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--text-3);
+  text-decoration: none;
+  margin-bottom: 18px;
+  transition: gap 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.job-back:hover {
+  color: var(--text);
+  gap: 10px;
+}
+
+.job-hero-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.job-hero h1 {
+  font-size: clamp(25px, 3.2vw, 38px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  margin-bottom: 6px;
+}
+
+.job-layout {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 34px;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 34px;
+  align-items: start;
+}
+
+/* The posting is the page. It animates itself in, never on an observer. */
+.job-main {
+  min-width: 0;
+  animation: rise 0.5s var(--ease-out) 0.04s both;
+}
+
+.job-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin: 0 0 28px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.job-fact {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.job-fact > svg {
+  color: var(--text-3);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.job-fact dt {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 3px;
+}
+
+.job-fact dd {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.job-block {
+  margin-bottom: 30px;
+}
+
+.job-block h2 {
+  font-size: 19px;
+  letter-spacing: -0.015em;
+  margin-bottom: 12px;
+}
+
+.job-prose {
+  max-width: 72ch;
+  color: var(--text-2);
+  font-size: 14.5px;
+  line-height: 1.68;
+}
+
+.job-prose p {
+  margin-bottom: 14px;
+}
+
+.job-side {
+  display: grid;
+  gap: 16px;
+  position: sticky;
+  top: 88px;
+}
+
+.job-apply-card {
+  padding: 20px;
+  border-radius: var(--r-lg);
+  border: 1px solid color-mix(in srgb, var(--brand) 26%, transparent);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  animation: pop 0.5s var(--ease-out) 0.08s both;
+}
+
+.job-apply-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--brand), var(--signal));
+}
+
+.job-apply-card h3 {
+  font-size: 18px;
+  letter-spacing: -0.015em;
+  margin: 6px 0 8px;
+}
+
+.job-apply-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.job-apply-actions .btn {
+  width: 100%;
+}
+
+.job-company-card {
+  animation: rise 0.5s var(--ease-out) 0.14s both;
+}
+
+@media (max-width: 900px) {
+  .job-layout {
+    grid-template-columns: 1fr;
+    padding: 24px 18px;
+  }
+  .job-side {
+    position: static;
+  }
+  .job-hero {
+    padding: 26px 18px 24px;
+  }
+}
+
+/* --------------------------------------------------------- auth: two doors */
+
+/*
+ * "Sign in" and "Sign up" as two labelled cards rather than two buttons side by
+ * side. Two buttons make the reader guess which one is meant for them; a card
+ * that says who it is for does not.
+ */
+.auth-choice {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.auth-choice-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease),
+    transform 0.18s var(--ease-out), background 0.18s var(--ease);
+}
+
+.auth-choice-card:hover {
+  border-color: var(--brand);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+  text-decoration: none;
+  color: var(--text);
+}
+
+.auth-choice-card.primary {
+  border-color: color-mix(in srgb, var(--brand) 45%, transparent);
+  background: var(--brand-soft);
+}
+
+.auth-choice-card strong {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.auth-choice-card em {
+  display: block;
+  font-style: normal;
+  font-size: 12.5px;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+
+.auth-choice-card > svg:last-child {
+  color: var(--text-3);
+  transition: transform 0.2s var(--ease-out), color 0.2s var(--ease);
+}
+
+.auth-choice-card:hover > svg:last-child {
+  transform: translateX(3px);
+  color: var(--brand);
+}
+
+.auth-choice-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  color: var(--brand);
+}
+
+.auth-choice-card.primary .auth-choice-icon {
+  background: var(--surface);
 }

@@ -1,12 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import { homeFor } from '../../components/ProtectedRoute';
 import { Alert, Field } from '../../components/ui';
 import { errorMessage } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
+import { safeNext, withNext } from '../../lib/next';
 import AuthLayout from './AuthLayout';
 
 const schema = z.object({
@@ -19,7 +20,17 @@ type FormValues = z.infer<typeof schema>;
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [params] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+
+  /*
+   * Two ways to arrive with somewhere to go back to: ?next= (a link that knew
+   * where it was sending you, like the apply gate) and the state ProtectedRoute
+   * sets when it bounces you off a page you were not signed in for.
+   */
+  const fromGuard = (location.state as { from?: string } | null)?.from;
+  const next = safeNext(params.get('next')) ?? safeNext(fromGuard);
   const {
     register,
     handleSubmit,
@@ -30,7 +41,7 @@ export default function Login() {
     setError(null);
     try {
       const user = await login(values.email, values.password);
-      navigate(homeFor(user.role), { replace: true });
+      navigate(next ?? homeFor(user.role), { replace: true });
     } catch (caught) {
       setError(errorMessage(caught, 'Could not sign you in'));
     }
@@ -39,10 +50,15 @@ export default function Login() {
   return (
     <AuthLayout
       title="Sign in"
-      subtitle="Use your email and password to access your workspace."
+      subtitle={
+        next
+          ? 'Sign in and we will take you straight back to where you left off.'
+          : 'Use your email and password to access your workspace.'
+      }
       footer={
         <p className="muted">
-          No account yet? <Link to="/register">Create one</Link> · <Link to="/forgot-password">Forgot password?</Link>
+          No account yet? <Link to={withNext('/register', next)}>Create one</Link> ·{' '}
+          <Link to="/forgot-password">Forgot password?</Link>
         </p>
       }
     >

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { AppIcon, type IconName } from './AppIcon';
 import { scoreTone, titleCase } from '../lib/format';
 import type { VerificationStatus } from '../lib/types';
@@ -154,10 +155,20 @@ export function Avatar({ name, size = 38 }: { name: string; size?: number }) {
 
 /* --------------------------------------------------------------- progress */
 
+/* Each tone runs from a deeper shade into a lighter one of the same hue, so the
+   arc reads as one colour with depth rather than as two colours. */
+const RING_STOPS: Record<'success' | 'warning' | 'danger', [string, string]> = {
+  success: ['#0b6544', '#2fb37c'],
+  warning: ['#96450a', '#e0912c'],
+  danger: ['#9e2233', '#e0596d'],
+};
+
 export function ScoreRing({ score, label = 'ATS score', size = 116 }: { score: number; label?: string; size?: number }) {
   const clamped = Math.max(0, Math.min(100, Math.round(score)));
   const tone = scoreTone(clamped);
-  const color = tone === 'success' ? 'var(--success)' : tone === 'warning' ? 'var(--warning)' : 'var(--danger)';
+  const [from, to] = RING_STOPS[tone as 'success' | 'warning' | 'danger'] ?? RING_STOPS.success;
+  /* An SVG gradient is referenced by id, so two rings on one page need two ids. */
+  const gradientId = `ring-${useId().replace(/:/g, '')}`;
   const stroke = 6;
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -170,6 +181,12 @@ export function ScoreRing({ score, label = 'ATS score', size = 116 }: { score: n
       aria-label={`${label}: ${clamped} out of 100`}
     >
       <svg width={size} height={size}>
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor={from} />
+            <stop offset="100%" stopColor={to} />
+          </linearGradient>
+        </defs>
         <circle className="track" cx={size / 2} cy={size / 2} r={radius} strokeWidth={stroke} />
         <circle
           className="value-arc"
@@ -177,7 +194,7 @@ export function ScoreRing({ score, label = 'ATS score', size = 116 }: { score: n
           cy={size / 2}
           r={radius}
           strokeWidth={stroke}
-          stroke={color}
+          stroke={`url(#${gradientId})`}
           style={{ strokeDashoffset: circumference - (circumference * clamped) / 100 }}
         />
       </svg>
@@ -328,6 +345,17 @@ export function Pagination({
   );
 }
 
+/**
+ * A dialog over the whole viewport.
+ *
+ * It renders into `document.body` rather than where it is written. `position:
+ * fixed` is only relative to the viewport while no ancestor is a containing
+ * block for it, and a transform, filter or animated transform on any ancestor
+ * makes one — at which point the overlay is measured against that ancestor and,
+ * if it clips, trapped inside it. Cards here do exactly that: they lift on hover
+ * and clip their overflow, so a dialog opened from a button inside one appeared
+ * inside the card. Portalling puts the dialog beyond the reach of all of it.
+ */
 export function Modal({
   title,
   onClose,
@@ -347,7 +375,18 @@ export function Modal({
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
-  return (
+  /* The page behind must not scroll while a dialog owns the screen. */
+  useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, []);
+
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label={title} onClick={onClose}>
       <div className="card modal-card" onClick={(event) => event.stopPropagation()}>
         <div className="card-header">
@@ -359,7 +398,8 @@ export function Modal({
         {children}
         {footer && <div className="row mt-2" style={{ justifyContent: 'flex-end' }}>{footer}</div>}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

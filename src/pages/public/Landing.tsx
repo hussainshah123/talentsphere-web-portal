@@ -1,8 +1,12 @@
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { AppIcon, type IconName } from '../../components/AppIcon';
+import { PublicFooter, PublicNav, ScrollProgress } from '../../components/PublicNav';
 import { Badge, Progress } from '../../components/ui';
-import { useTheme } from '../../lib/theme';
+import { api } from '../../lib/api';
+import { formatSalary, relativeTime } from '../../lib/format';
 import { useCountUp, useReveal, useScrollY } from '../../lib/reveal';
+import type { Job } from '../../lib/types';
 
 /*
  * Photography is bundled from Unsplash (free for commercial use) rather than hotlinked,
@@ -137,6 +141,132 @@ const WORKSPACES: Array<{ icon: IconName; role: string; title: string; items: st
   },
 ];
 
+/**
+ * The headline sets itself a word at a time. Each word is its own inline-block so the
+ * transform never breaks the line box, and the delay is computed rather than authored.
+ */
+const HEADLINE: Array<{ text: string; em?: boolean }> = [
+  { text: 'A' },
+  { text: 'profile' },
+  { text: 'worth' },
+  { text: 'trusting.', em: true },
+  { text: 'A' },
+  { text: 'CV' },
+  { text: 'the' },
+  { text: 'machine' },
+  { text: 'can' },
+  { text: 'actually' },
+  { text: 'read.' },
+];
+
+function Headline() {
+  return (
+    <h1 className="hero-headline">
+      {HEADLINE.map((word, index) => (
+        <span
+          key={`${word.text}-${index}`}
+          style={{ animationDelay: `${0.06 + index * 0.04}s` }}
+        >
+          {word.em ? <em>{word.text}</em> : word.text}
+        </span>
+      ))}
+    </h1>
+  );
+}
+
+/**
+ * Five real, live postings on the marketing page. Anyone can read them and open them;
+ * the board behind the link is public too. Applying is the line that needs an account.
+ */
+function LiveJobs() {
+  const { ref, className } = useReveal<HTMLElement>();
+  const { data, isLoading } = useQuery({
+    queryKey: ['landing-live-jobs'],
+    queryFn: async () =>
+      (
+        await api.get<{ items: Job[]; total: number }>('/jobs', {
+          params: { page: 1, pageSize: 5, sort: 'recent' },
+        })
+      ).data,
+    staleTime: 60_000,
+    retry: false,
+  });
+
+  const jobs = data?.items ?? [];
+
+  return (
+    <section className={`landing-section ${className}`} id="jobs" ref={ref}>
+      <div className="section-head row between wrap" style={{ maxWidth: 'none', gap: 18 }}>
+        <div style={{ maxWidth: '52ch' }}>
+          <p className="overline">Live right now</p>
+          <h2 className="mb-0">Look before you sign up.</h2>
+          <p className="muted mb-0 mt-1">
+            The whole board is open to read — title, company, salary band, skills and remote rules.
+            You only need an account for the moment you apply.
+          </p>
+        </div>
+        <Link to="/browse-jobs" className="btn btn-secondary">
+          Browse all jobs <AppIcon name="forward" size={15} />
+        </Link>
+      </div>
+
+      <div className="live-jobs">
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="live-job">
+              <div className="skeleton" style={{ width: '38%', height: 16 }} />
+              <div className="skeleton" style={{ width: '22%', height: 14 }} />
+            </div>
+          ))
+        ) : jobs.length === 0 ? (
+          <div className="live-job empty">
+            <span className="muted">
+              No roles are live at this moment — the board fills as verified companies publish.
+            </span>
+            <Link to="/browse-jobs" className="btn btn-secondary btn-sm">
+              Open the board
+            </Link>
+          </div>
+        ) : (
+          jobs.map((job, index) => (
+            <Link
+              key={job.id}
+              to={`/browse-jobs/${job.id}`}
+              className="live-job"
+              style={{ animationDelay: `${index * 0.06}s` }}
+            >
+              <span className="live-job-title">
+                <strong>{job.title}</strong>
+                <em>
+                  {job.company?.name} · {(job.location ?? job.country) || 'Location flexible'} ·{' '}
+                  {job.workMode.replace(/_/g, ' ').toLowerCase()}
+                </em>
+              </span>
+              <span className="live-job-meta">
+                <span className="num">
+                  {formatSalary({
+                    min: job.salaryMin,
+                    max: job.salaryMax,
+                    currency: job.salaryCurrency,
+                  })}
+                </span>
+                <em>{relativeTime(job.publishedAt ?? job.createdAt)}</em>
+              </span>
+              <span className="live-job-go" aria-hidden="true">
+                <AppIcon name="forward" size={15} />
+              </span>
+            </Link>
+          ))
+        )}
+      </div>
+
+      <p className="hero-note" style={{ marginTop: 18 }}>
+        Viewing is open to everyone · applying needs a free candidate account
+      </p>
+    </section>
+  );
+}
+
 /** A phone-shaped slice of the real mobile UI, drawn rather than screenshotted. */
 function PhoneMock({ variant }: { variant: 'home' | 'applications' }) {
   return (
@@ -257,7 +387,6 @@ function CapabilityRow({ capability, index }: { capability: Capability; index: n
 }
 
 export default function Landing() {
-  const { isDark, toggle } = useTheme();
   const scrollY = useScrollY();
   const mobile = useReveal<HTMLElement>();
   const workspaces = useReveal<HTMLElement>();
@@ -266,41 +395,26 @@ export default function Landing() {
 
   return (
     <div className="landing">
-      <header className={`landing-nav ${scrollY > 8 ? 'condensed' : ''}`}>
-        <div className="brand">
-          <span className="brand-mark">
-            <AppIcon name="shield" size={17} strokeWidth={1.9} />
-          </span>
-          <span>
-            TalentSphere
-            <small>Verified talent</small>
-          </span>
-        </div>
-        <nav className="landing-links">
-          <a href="#capabilities">Product</a>
-          <a href="#mobile">Mobile app</a>
-          <a href="#workspaces">Dashboards</a>
-        </nav>
-        <div className="row">
-          <button className="theme-toggle" onClick={toggle} aria-label="Toggle theme">
-            <AppIcon name={isDark ? 'sun' : 'moon'} size={16} />
-          </button>
-          <Link to="/login" className="btn btn-secondary btn-sm">
-            Sign in
-          </Link>
-          <Link to="/register" className="btn btn-sm">
-            Create account
-          </Link>
-        </div>
-      </header>
+      <ScrollProgress />
+      <PublicNav
+        links={[
+          { href: '/browse-jobs', label: 'Browse jobs' },
+          { href: '/#capabilities', label: 'Product' },
+          { href: '/#mobile', label: 'Mobile app' },
+          { href: '/#workspaces', label: 'Dashboards' },
+        ]}
+      />
 
       <section className="landing-hero">
+        {/* Two very slow, very faint washes. Motion you notice is motion that has failed. */}
+        <div className="hero-aurora" aria-hidden="true">
+          <i />
+          <i />
+        </div>
         <div className="hero-inner">
           <div className="hero-copy">
             <p className="overline">Recruitment, without the guesswork</p>
-            <h1>
-              A profile worth <em>trusting.</em> A CV the machine can actually read.
-            </h1>
+            <Headline />
             <p className="lede">
               Candidates clear a checklist they can see and get an ATS score they can act on.
               Companies search people who are real, verified and open to being contacted — and never
@@ -314,6 +428,12 @@ export default function Landing() {
                 Hire on TalentSphere
               </Link>
             </div>
+            <p className="hero-browse">
+              <Link to="/browse-jobs">
+                Or browse every live job first — no account needed
+                <AppIcon name="forward" size={14} />
+              </Link>
+            </p>
             <p className="hero-note">
               Free for candidates · companies verified before contact · web and mobile
             </p>
@@ -407,6 +527,10 @@ export default function Landing() {
           ))}
         </div>
       </div>
+
+      {/* ---------------------------------------------------------- live jobs */}
+
+      <LiveJobs />
 
       {/* ------------------------------------------------------------- mobile */}
 
@@ -567,28 +691,17 @@ export default function Landing() {
             recruiter who reaches you has already proved who they are.
           </p>
           <div className="row wrap mt-2">
-            <Link to="/register" className="btn btn-lg">
+            <Link to="/register" className="btn btn-lg btn-shine">
               Create an account
             </Link>
-            <Link to="/login" className="btn btn-secondary btn-lg">
-              Sign in
+            <Link to="/browse-jobs" className="btn btn-secondary btn-lg">
+              Browse jobs first
             </Link>
           </div>
         </div>
       </section>
 
-      <footer className="landing-footer">
-        <p style={{ maxWidth: '80ch' }}>
-          ATS scores and match scores are automated, advisory assessments and may contain errors; they
-          must not be the sole basis for a hiring decision. A verification badge indicates completion
-          of defined platform checks — not a guarantee of skill, honesty, employment history or hiring
-          suitability.
-        </p>
-        <p className="mb-0" style={{ fontSize: 12.5, color: 'var(--text-3)' }}>
-          Photography from Unsplash, bundled with the site. The people pictured are not TalentSphere
-          users and appear for illustration only.
-        </p>
-      </footer>
+      <PublicFooter />
     </div>
   );
 }

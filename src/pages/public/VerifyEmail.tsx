@@ -1,16 +1,20 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { homeFor } from '../../components/ProtectedRoute';
 import { useToast } from '../../components/Toast';
 import { Alert, Field } from '../../components/ui';
 import { api, errorMessage } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
+import { safeNext } from '../../lib/next';
 import AuthLayout from './AuthLayout';
 
 export default function VerifyEmail() {
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const toast = useToast();
+  /* Set when someone signed up mid-task — an apply, usually. */
+  const next = safeNext(params.get('next'));
   const [code, setCode] = useState('');
   const [email, setEmail] = useState(user?.email ?? '');
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +28,7 @@ export default function VerifyEmail() {
       await api.post('/auth/verify-email', { code, email: email || undefined });
       const me = await refreshUser();
       toast.success('Email verified');
-      navigate(me ? homeFor(me.role) : '/login', { replace: true });
+      navigate(next ?? (me ? homeFor(me.role) : '/login'), { replace: true });
     } catch (caught) {
       setError(errorMessage(caught, 'Could not verify that code'));
     } finally {
@@ -72,9 +76,21 @@ export default function VerifyEmail() {
         </button>
       </form>
       {user && (
-        <button className="ghost mt-1" onClick={resend}>
-          Send a new code
-        </button>
+        <div className="row wrap mt-1" style={{ justifyContent: 'space-between' }}>
+          <button className="ghost" onClick={resend}>
+            Send a new code
+          </button>
+          {/*
+            Verifying is the first verification check, not a gate on using the
+            account — the server decides what an unverified user may do. Someone
+            who came here mid-apply gets to carry on and verify later.
+          */}
+          {next && (
+            <Link to={next} className="btn btn-secondary btn-sm" replace>
+              Skip for now and carry on
+            </Link>
+          )}
+        </div>
       )}
     </AuthLayout>
   );

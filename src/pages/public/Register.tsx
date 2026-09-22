@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { Alert, Field } from '../../components/ui';
 import { errorMessage } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
+import { safeNext, withNext } from '../../lib/next';
 import AuthLayout from './AuthLayout';
 
 const schema = z.object({
@@ -31,6 +32,8 @@ export default function Register() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  /* Carried from the apply gate, so the new account lands back on the job. */
+  const next = safeNext(params.get('next'));
 
   const {
     register,
@@ -57,7 +60,10 @@ export default function Register() {
         role: values.role,
         acceptedTerms: true,
       });
-      navigate(user.role === 'RECRUITER' ? '/recruiter/onboarding' : '/verify-email', { replace: true });
+      navigate(
+        user.role === 'RECRUITER' ? '/recruiter/onboarding' : withNext('/verify-email', next),
+        { replace: true },
+      );
     } catch (caught) {
       setError(errorMessage(caught, 'Could not create your account'));
     }
@@ -66,10 +72,14 @@ export default function Register() {
   return (
     <AuthLayout
       title="Create your account"
-      subtitle="Candidates build a verified profile. Companies get access after company verification."
+      subtitle={
+        next
+          ? 'It takes a minute and it is free. We will bring you back to where you left off.'
+          : 'Candidates build a verified profile. Companies get access after company verification.'
+      }
       footer={
         <p className="muted">
-          Already registered? <Link to="/login">Sign in</Link>
+          Already registered? <Link to={withNext('/login', next)}>Sign in</Link>
         </p>
       }
     >
