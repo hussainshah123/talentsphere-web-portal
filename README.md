@@ -34,6 +34,40 @@ instead of showing the status code, so this failure is recognisable when it happ
 | `npm run build` | Typecheck and production build into `dist/` |
 | `npm run preview` | Serve the production build |
 
+## Deploying
+
+The build is a static bundle plus one hard requirement: **the host must serve `index.html` for
+every unknown path.** Routing happens in the browser, so nothing exists on disk at
+`/browse-jobs` — a host that looks for a file there returns 404 on a refresh or a shared link,
+while the same URL works fine when reached by clicking inside the app. Two configs in this repo
+do that job:
+
+- `nginx.conf` — `try_files $uri $uri/ /index.html`, used by the Docker image.
+- `vercel.json` — `rewrites` maps everything except `/api/` to `/index.html`, and marks the
+  hashed `/assets/` immutable while keeping `index.html` uncached.
+
+**Point `/api` somewhere real.** In development Vite proxies it; in Docker nginx proxies it. A
+static host does neither, so a deployed build with no extra configuration renders the app and
+then fails every request. Pick one:
+
+1. **Proxy it, same-origin** (what nginx does, and no CORS involved). Add this to `vercel.json`
+   *above* the SPA rewrite — order matters, first match wins:
+
+   ```json
+   { "source": "/api/:path*", "destination": "https://your-api-host/api/:path*" }
+   ```
+
+2. **Call it cross-origin.** Set `VITE_API_URL=https://your-api-host/api` in the host's
+   environment. It is read at *build* time — Vite inlines it — so changing it needs a rebuild,
+   not just a restart. The API must then allow the site's origin: set `CORS_ORIGINS` on the
+   backend to the exact origin, scheme and host, no trailing slash and no path. The API logs
+   `Blocked CORS origin: …` when it refuses one, because otherwise the only evidence is a
+   console message on someone else's machine.
+
+The `/api/` exclusion in the SPA rewrite is deliberate: without it an API call to a missing
+backend would be answered with `index.html`, and the failure would surface as a JSON parse error
+instead of a plain 404.
+
 ## Structure
 
 ```
